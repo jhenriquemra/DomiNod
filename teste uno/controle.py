@@ -1,7 +1,6 @@
 import serial
 import pyautogui
 
-# Troque COM3 pela sua porta (no Linux: '/dev/ttyUSB0')
 ser = serial.Serial('COM7', 115200, timeout=1)
 
 print("Rodando... pressione CTRL+C para parar")
