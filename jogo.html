@@ -1,0 +1,2885 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DomiNod</title>
+  <style>/* ═══════════════════════════════════════════════════════
+   DOMINÓ BRASILEIRO — STYLESHEET
+   Felt green table, ivory tiles, real pip layout
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: #0a1f0e;
+  color: #f0ece0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Screens ─── */
+.screen {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.screen.active { display: flex; flex-direction: column; }
+
+/* ─── Key Legend ─── */
+.key-legend {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 24px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  z-index: 50;
+}
+kbd {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: rgba(255,255,255,0.7);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   MENU SCREEN
+═══════════════════════════════════════════════════════ */
+#screen-menu {
+  background: radial-gradient(ellipse 90% 80% at 50% 55%, #133d1c 0%, #071209 80%);
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-bg-texture {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.008) 40px, rgba(255,255,255,0.008) 41px),
+    repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.008) 40px, rgba(255,255,255,0.008) 41px);
+}
+
+.menu-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  z-index: 1;
+}
+
+.menu-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+.menu-logo h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 10vw, 110px);
+  letter-spacing: 8px;
+  line-height: 1;
+  background: linear-gradient(160deg, #f8e080 0%, #f0c040 45%, #c8901a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 3px 16px rgba(240,192,64,0.25));
+}
+.logo-tile {
+  display: flex;
+  align-items: center;
+  background: #f5f0e0;
+  border: 2px solid #c8b890;
+  border-radius: 5px;
+  padding: 4px;
+  box-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+  gap: 3px;
+}
+
+.menu-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(240,220,160,0.5);
+  margin-bottom: 40px;
+}
+
+/* ─── Menu List ─── */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: min(360px, 90vw);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.14s ease;
+  position: relative;
+  overflow: hidden;
+}
+.menu-item::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: #f0c040;
+  transform: scaleY(0);
+  transition: transform 0.14s;
+  border-radius: 0 2px 2px 0;
+}
+.menu-item.focused {
+  background: rgba(240,192,64,0.08);
+  border-color: rgba(240,192,64,0.5);
+  box-shadow: 0 0 0 2px rgba(240,192,64,0.2), inset 0 0 20px rgba(240,192,64,0.04);
+  transform: translateX(3px);
+}
+.menu-item.focused::after { transform: scaleY(1); }
+
+.mi-icon { font-size: 20px; width: 26px; text-align: center; }
+.mi-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgba(240,235,220,0.7);
+}
+.mi-text em { font-style: normal; color: #f0c040; }
+.menu-item.focused .mi-text { color: #f0ece0; }
+.mi-desc { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+
+/* ═══════════════════════════════════════════════════════
+   SETUP PANELS (difficulty, who-starts, rules)
+═══════════════════════════════════════════════════════ */
+#screen-difficulty,
+#screen-who-starts,
+#screen-rules {
+  background: radial-gradient(ellipse at 50% 40%, #0f2e16 0%, #060e07 80%);
+  align-items: center;
+  justify-content: center;
+}
+
+.setup-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.setup-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px;
+  letter-spacing: 5px;
+  color: #f0c040;
+  margin-bottom: 4px;
+}
+.setup-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+/* Rules */
+.rules-panel {
+  max-width: 560px;
+  width: 90vw;
+  padding: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  overflow-y: auto;
+  max-height: 85vh;
+}
+.rules-panel h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 5px;
+  color: #f0c040;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.rules-body { display: flex; flex-direction: column; gap: 14px; }
+.rules-body section h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240,192,64,0.8);
+  margin-bottom: 4px;
+}
+.rules-body section p, .rules-body section ul {
+  font-size: 13px;
+  color: rgba(240,235,220,0.75);
+  line-height: 1.7;
+}
+.rules-body ul { padding-left: 18px; }
+.rules-body strong { color: #f0ece0; }
+
+
+/* ═══════════════════════════════════════════════════════
+   GAME SCREEN
+═══════════════════════════════════════════════════════ */
+#screen-game {
+  display: none;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 100% 100% at 50% 50%, #1a4d28 0%, #0d2e18 60%, #081a0e 100%);
+  overflow: hidden;
+  position: relative;
+}
+#screen-game.active { display: flex; }
+
+/* Felt texture */
+#screen-game::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='white' x='0' y='0'/%3E%3Crect width='1' height='1' fill='white' x='2' y='2'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+}
+
+/* ─── Header ─── */
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px;
+  background: rgba(0,0,0,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.score-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+.score-right { flex-direction: row-reverse; }
+.score-team-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+.score-pips {
+  display: flex;
+  gap: 4px;
+}
+.score-pip {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: transparent;
+  transition: all 0.3s;
+}
+.score-pip.filled-a {
+  background: #4a90d9;
+  border-color: #4a90d9;
+  box-shadow: 0 0 5px rgba(74,144,217,0.5);
+}
+.score-pip.filled-b {
+  background: #e05050;
+  border-color: #e05050;
+  box-shadow: 0 0 5px rgba(224,80,80,0.5);
+}
+.score-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  line-height: 1;
+  color: #f0ece0;
+}
+
+.turn-block {
+  text-align: center;
+  padding: 4px 16px;
+  background: rgba(240,192,64,0.08);
+  border: 1px solid rgba(240,192,64,0.25);
+  border-radius: 8px;
+  min-width: 140px;
+}
+.turn-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240,192,64,0.6);
+  font-family: 'Barlow Condensed', sans-serif;
+}
+.turn-player {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #f0c040;
+}
+
+/* ─── Player Zones ─── */
+.player-zone {
+  z-index: 2;
+}
+
+.zone-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 10px 2px;
+  flex-shrink: 0;
+}
+
+.zone-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 10px 5px;
+  flex-shrink: 0;
+}
+
+.game-middle {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.zone-left, .zone-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  width: 64px;
+  flex-shrink: 0;
+}
+
+/* ─── AI Hand Labels ─── */
+.ai-hand-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.vertical-label {
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+.ai-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.7);
+}
+.ai-count {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-family: 'DM Mono', monospace;
+}
+.ai-team-badge {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.team-a { background: rgba(74,144,217,0.25); color: #4a90d9; border: 1px solid rgba(74,144,217,0.4); }
+.team-b { background: rgba(224,80,80,0.2); color: #e05050; border: 1px solid rgba(224,80,80,0.35); }
+.pass-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 1px 6px;
+  background: rgba(200,50,50,0.35);
+  border: 1px solid rgba(200,50,50,0.6);
+  color: #ff8080;
+  border-radius: 4px;
+  animation: flashBadge 0.5s ease;
+}
+.pass-badge.hidden { display: none; }
+@keyframes flashBadge {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ─── AI Hand (hidden tiles) ─── */
+.ai-hand {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ai-hand.vertical {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ─── Human Hand ─── */
+.human-hand-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+.hand-scroll {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  padding: 4px 10px;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+.hand-scroll::-webkit-scrollbar { display: none; }
+
+/* ─── Board ─── */
+.board-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.board-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  /* transform applied by JS */
+}
+
+.board-ends {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ─── Status Bar ─── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 16px;
+  background: rgba(0,0,0,0.55);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  z-index: 10;
+  min-height: 46px;
+}
+
+.status-msg {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  color: rgba(240,235,220,0.6);
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+.status-msg.active { color: #f0c040; }
+.status-msg.warn { color: #e08050; }
+.status-msg.good { color: #50c878; }
+
+.side-choice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.side-choice.hidden { display: none; }
+
+.side-btn {
+  padding: 6px 16px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 7px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.side-btn.focused {
+  border-color: #f0c040;
+  color: #f0c040;
+  background: rgba(240,192,64,0.1);
+  box-shadow: 0 0 0 2px rgba(240,192,64,0.2);
+}
+.side-btn span { font-family: 'Bebas Neue', sans-serif; font-size:15px; }
+
+
+/* ═══════════════════════════════════════════════════════
+   DOMINO TILES — Realistic ivory pieces
+═══════════════════════════════════════════════════════ */
+
+/* Base tile structure */
+.domino-tile {
+  display: inline-flex;
+  flex-direction: column;
+  background: #f2ede0;
+  border: 1.5px solid #b8a880;
+  border-radius: 5px;
+  box-shadow:
+    1px 2px 6px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(0,0,0,0.1);
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  flex-shrink: 0;
+}
+
+/* Horizontal tile (default) */
+.domino-tile.horizontal {
+  flex-direction: row;
+  width: 68px;
+  height: 34px;
+}
+/* Vertical tile */
+.domino-tile.vertical {
+  flex-direction: column;
+  width: 34px;
+  height: 68px;
+}
+
+/* Larger tiles for human hand */
+.domino-tile.hand-size {
+  width: 76px;
+  height: 38px;
+}
+
+/* Board tiles — standard */
+.domino-tile.board-h {
+  width: 64px;
+  height: 32px;
+}
+.domino-tile.board-v {
+  width: 32px;
+  height: 64px;
+  flex-direction: column;
+}
+
+/* Small AI back tiles */
+.domino-tile.small-h {
+  width: 32px;
+  height: 17px;
+}
+.domino-tile.small-v {
+  width: 17px;
+  height: 32px;
+  flex-direction: column;
+}
+.domino-tile.side-h {
+  width: 44px;
+  height: 22px;
+}
+.domino-tile.side-v {
+  width: 22px;
+  height: 44px;
+  flex-direction: column;
+}
+
+/* Tile halves */
+.tile-half {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+}
+
+/* Divider */
+.tile-divider {
+  background: #a09070;
+  flex-shrink: 0;
+}
+.domino-tile.horizontal .tile-divider,
+.domino-tile.board-h .tile-divider,
+.domino-tile.hand-size .tile-divider {
+  width: 1.5px;
+  height: 80%;
+  align-self: center;
+}
+.domino-tile.vertical .tile-divider,
+.domino-tile.board-v .tile-divider,
+.domino-tile.small-v .tile-divider,
+.domino-tile.side-v .tile-divider {
+  width: 80%;
+  height: 1.5px;
+  align-self: center;
+}
+.domino-tile.small-h .tile-divider,
+.domino-tile.side-h .tile-divider {
+  width: 1.5px;
+  height: 70%;
+  align-self: center;
+}
+
+/* BACK of tile (AI tiles) */
+.domino-tile.tile-back {
+  background: linear-gradient(135deg, #1a2e5a 0%, #0d1e3e 60%, #162240 100%);
+  border-color: #0a1428;
+}
+.domino-tile.tile-back::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+}
+
+/* Focused (keyboard selection) */
+.domino-tile.tile-focused {
+  transform: translateY(-10px) scale(1.08);
+  box-shadow:
+    0 0 0 2.5px #f0c040,
+    0 0 16px rgba(240,192,64,0.7),
+    0 8px 20px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+  z-index: 20;
+}
+
+/* Selected (confirmed) */
+.domino-tile.tile-selected {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:
+    0 0 0 2px #f0c040,
+    0 0 10px rgba(240,192,64,0.5),
+    0 6px 16px rgba(0,0,0,0.5);
+  background: #fffae8;
+  z-index: 15;
+}
+
+/* Playable (can be played) */
+.domino-tile.tile-playable {
+  box-shadow:
+    0 0 0 1.5px rgba(80,200,120,0.6),
+    0 0 8px rgba(80,200,120,0.3),
+    1px 2px 6px rgba(0,0,0,0.5);
+}
+
+/* Not playable (grayed) */
+.domino-tile.tile-not-playable {
+  opacity: 0.4;
+  filter: saturate(0.3) brightness(0.7);
+}
+
+/* Board tile animation */
+@keyframes tilePlace {
+  0% { opacity: 0; transform: scale(0.6) rotate(var(--place-rot, 0deg)); }
+  60% { transform: scale(1.08) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.tile-placing { animation: tilePlace 0.35s cubic-bezier(0.34,1.4,0.64,1) forwards; }
+
+/* ─── PIPS ─── */
+/* Each half contains a pip-field */
+.pip-field {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 10% 8%;
+}
+
+/* Pip dot */
+.pip-dot {
+  border-radius: 50%;
+  background: #1a1520;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 0.5px 0 rgba(255,255,255,0.15);
+  align-self: center;
+  justify-self: center;
+  width: 30%;
+  height: 30%;
+  min-width: 3px;
+  min-height: 3px;
+}
+
+/* Grid positions: r=row, c=col (1-3) */
+.pip-r1c1 { grid-area: 1/1; }
+.pip-r1c2 { grid-area: 1/2; }
+.pip-r1c3 { grid-area: 1/3; }
+.pip-r2c1 { grid-area: 2/1; }
+.pip-r2c2 { grid-area: 2/2; }
+.pip-r2c3 { grid-area: 2/3; }
+.pip-r3c1 { grid-area: 3/1; }
+.pip-r3c2 { grid-area: 3/2; }
+.pip-r3c3 { grid-area: 3/3; }
+
+
+/* ═══════════════════════════════════════════════════════
+   OVERLAYS
+═══════════════════════════════════════════════════════ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(5px);
+}
+.overlay.hidden { display: none; }
+
+.overlay-box {
+  background: linear-gradient(145deg, #0e2917 0%, #071409 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 36px 40px;
+  max-width: 440px;
+  width: 92%;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: modalPop 0.32s cubic-bezier(0.34,1.5,0.64,1);
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.82) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.overlay-icon { font-size: 56px; margin-bottom: 10px; display: block; }
+.overlay-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+.overlay-title.good { color: #f0c040; }
+.overlay-title.bad  { color: #e06060; }
+.overlay-title.info { color: #4a90d9; }
+.overlay-title.wow  { color: #ff9050; }
+
+.overlay-details {
+  font-size: 14px;
+  color: rgba(240,235,220,0.65);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.overlay-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: rgba(240,192,64,0.8);
+  margin-bottom: 16px;
+}
+
+.locked-info {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: rgba(240,235,220,0.6);
+  text-align: left;
+}
+.locked-info.hidden { display: none; }
+
+.overlay-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 9px;
+  background: rgba(255,255,255,0.05);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: rgba(240,235,220,0.7);
+  cursor: pointer;
+  transition: all 0.14s;
+  margin-top: 4px;
+}
+.overlay-btn.focused {
+  border-color: #f0c040;
+  color: #f0c040;
+  background: rgba(240,192,64,0.1);
+  box-shadow: 0 0 0 2px rgba(240,192,64,0.25);
+}
+
+.overlay-sub { font-size: 14px; color: rgba(240,235,220,0.5); margin-bottom: 12px; }
+.overlay-final-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 4px;
+  color: rgba(240,235,220,0.8);
+  margin-bottom: 4px;
+}
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.88);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 9px 22px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #f0ece0;
+  z-index: 150;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: opacity 0.3s;
+}
+.toast.hidden { opacity: 0; pointer-events: none; }
+
+
+/* ═══════════════════════════════════════════════════════
+   BOARD POSITIONED TILES
+═══════════════════════════════════════════════════════ */
+.board-tile-wrapper {
+  position: absolute;
+  transition: none;
+}
+
+/* End markers on board */
+.end-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+.end-marker-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(240,192,64,0.5);
+}
+
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .domino-tile.hand-size { width: 60px; height: 30px; }
+  .domino-tile.board-h { width: 52px; height: 26px; }
+  .domino-tile.board-v { width: 26px; height: 52px; }
+  .zone-left, .zone-right { width: 50px; }
+  .overlay-box { padding: 24px 20px; }
+  .overlay-title { font-size: 34px; }
+}
+</style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       SCREEN: MENU
+  ═══════════════════════════════════════ -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-bg-texture"></div>
+    <div class="menu-center">
+      <div class="menu-logo">
+        <div class="logo-tile logo-tile-a"><span class="pip-group" data-val="6"></span><div class="divider-v"></div><span class="pip-group" data-val="6"></span></div>
+        <h1>DomiNod</h1>
+        <div class="logo-tile logo-tile-b"><span class="pip-group" data-val="0"></span><div class="divider-v"></div><span class="pip-group" data-val="0"></span></div>
+      </div>
+      <p class="menu-sub">Brasileiro · Duplas · 4 Jogadores</p>
+      <nav class="menu-list" id="menu-list" role="menu">
+        <div class="menu-item focused" data-action="play" role="menuitem" tabindex="0">
+          <span class="mi-icon">🎮</span><span class="mi-text">Nova Partida</span>
+        </div>
+        <div class="menu-item" data-action="difficulty" role="menuitem" tabindex="-1">
+          <span class="mi-icon">⚙️</span><span class="mi-text">Dificuldade: <em id="diff-label">Médio</em></span>
+        </div>
+        <div class="menu-item" data-action="rules" role="menuitem" tabindex="-1">
+          <span class="mi-icon">📋</span><span class="mi-text">Regras</span>
+        </div>
+      </nav>
+    </div>
+    <div class="key-legend">
+      <span><kbd>←</kbd><kbd>→</kbd> Navegar</span>
+      <span><kbd>Enter</kbd> Confirmar</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCREEN: DIFFICULTY
+  ═══════════════════════════════════════ -->
+  <div id="screen-difficulty" class="screen">
+    <div class="setup-panel">
+      <h2 class="setup-title">DIFICULDADE DA IA</h2>
+      <p class="setup-sub">Nível dos 3 adversários</p>
+      <nav class="menu-list" id="diff-list" role="menu">
+        <div class="menu-item focused" data-val="easy" role="menuitem" tabindex="0">
+          <span class="mi-icon">🌱</span>
+          <div><div class="mi-text">Fácil</div><div class="mi-desc">IA joga aleatoriamente</div></div>
+        </div>
+        <div class="menu-item" data-val="medium" role="menuitem" tabindex="-1">
+          <span class="mi-icon">⚡</span>
+          <div><div class="mi-text">Médio</div><div class="mi-desc">IA analisa jogadas e protege parceiro</div></div>
+        </div>
+        <div class="menu-item" data-val="hard" role="menuitem" tabindex="-1">
+          <span class="mi-icon">🔥</span>
+          <div><div class="mi-text">Difícil</div><div class="mi-desc">IA estratégica, memoriza e bloqueia</div></div>
+        </div>
+        <div class="menu-item" data-val="back" role="menuitem" tabindex="-1">
+          <span class="mi-icon">↩</span><span class="mi-text">Voltar</span>
+        </div>
+      </nav>
+    </div>
+    <div class="key-legend"><span><kbd>←</kbd><kbd>→</kbd> Navegar</span><span><kbd>Enter</kbd> Confirmar</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCREEN: RULES
+  ═══════════════════════════════════════ -->
+  <div id="screen-rules" class="screen">
+    <div class="rules-panel">
+      <h2>REGRAS</h2>
+      <div class="rules-body">
+        <section><h3>Objetivo</h3><p>Primeira dupla a atingir 6 pontos ganha a partida.</p></section>
+        <section><h3>Distribuição</h3><p>28 peças (duplo-seis), 6 por jogador, 4 no dorme (fora de jogo).</p></section>
+        <section><h3>Início</h3><p>Quem tem 6/6 abre. Se estiver no dorme: 5/5, 4/4… O jogador DEVE jogar a dupla obrigatoriamente.</p></section>
+        <section><h3>Turno</h3><p>Ordem anti-horária. Jogue uma peça que combine com uma extremidade. Sem peças válidas → passe a vez.</p></section>
+        <section><h3>Pontuação</h3>
+          <ul>
+            <li><strong>Batida Comum</strong> — zera a mão → +1 ponto</li>
+            <li><strong>Carroça</strong> — última peça é dupla → +2 pontos</li>
+            <li><strong>Lá e Lô</strong> — última peça encaixa nos dois lados → +3 pontos</li>
+            <li><strong>Cruzada</strong> — dupla E lá e lô simultâneo → +6 pontos (vitória imediata)</li>
+            <li><strong>Trancado</strong> — 4 passes seguidos → menor soma vence → +1 ponto</li>
+          </ul>
+        </section>
+        <section><h3>Duplas</h3><p>Equipe A = J1 + J3 &nbsp;·&nbsp; Equipe B = J2 + J4</p></section>
+      </div>
+      <button class="menu-item focused" id="rules-back-btn" style="margin-top:16px;">↩ Voltar ao Menu</button>
+    </div>
+    <div class="key-legend"><span><kbd>Enter</kbd> Voltar</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCREEN: WHO STARTS (rounds 2+)
+  ═══════════════════════════════════════ -->
+  <div id="screen-who-starts" class="screen">
+    <div class="setup-panel">
+      <h2 class="setup-title">QUEM INICIA?</h2>
+      <p class="setup-sub" id="who-starts-team">Dupla vencedora escolhe</p>
+      <nav class="menu-list" id="who-list" role="menu">
+        <div class="menu-item focused" data-val="me" role="menuitem" tabindex="0">
+          <span class="mi-icon">👤</span><span class="mi-text" id="who-me-label">Eu (Jogador 1)</span>
+        </div>
+        <div class="menu-item" data-val="partner" role="menuitem" tabindex="-1">
+          <span class="mi-icon">🤝</span><span class="mi-text" id="who-partner-label">Minha Dupla (Jogador 3)</span>
+        </div>
+      </nav>
+    </div>
+    <div class="key-legend"><span><kbd>←</kbd><kbd>→</kbd> Navegar</span><span><kbd>Enter</kbd> Confirmar</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCREEN: GAME
+  ═══════════════════════════════════════ -->
+  <div id="screen-game" class="screen">
+
+    <!-- Header: scores + turn -->
+    <header class="game-header">
+      <div class="score-block" id="score-a">
+        <span class="score-team-name">EQUIPE A</span>
+        <div class="score-pips" id="pips-a"></div>
+        <span class="score-num" id="score-num-a">0</span>
+      </div>
+      <div class="turn-block" id="turn-block">
+        <div class="turn-label" id="turn-label">Turno</div>
+        <div class="turn-player" id="turn-player">Jogador 1</div>
+      </div>
+      <div class="score-block score-right" id="score-b">
+        <span class="score-team-name">EQUIPE B</span>
+        <div class="score-pips" id="pips-b"></div>
+        <span class="score-num" id="score-num-b">0</span>
+      </div>
+    </header>
+
+    <!-- Opponent Top (J2 — parceiro de J0, frente a frente) -->
+    <div class="player-zone zone-top" id="zone-p2">
+      <div class="ai-hand-label">
+        <span class="ai-name" id="name-p2">Jogador 3</span>
+        <span class="ai-count" id="count-p2">6 peças</span>
+        <span class="ai-team-badge team-a">EQUIPE A</span>
+        <span class="pass-badge hidden" id="pass-p2">PASSOU</span>
+      </div>
+      <div class="ai-hand" id="hand-p2"></div>
+    </div>
+
+    <!-- Middle row -->
+    <div class="game-middle">
+      <!-- Left (J1 — adversário) -->
+      <div class="player-zone zone-left" id="zone-p1">
+        <div class="ai-hand-label vertical-label">
+          <span class="ai-name" id="name-p1">Jogador 2</span>
+          <span class="ai-count" id="count-p1">6</span>
+          <span class="ai-team-badge team-b">EQ.B</span>
+          <span class="pass-badge hidden" id="pass-p1">PASSOU</span>
+        </div>
+        <div class="ai-hand vertical" id="hand-p1"></div>
+      </div>
+
+      <!-- Board -->
+      <div class="board-container" id="board-container">
+        <div class="board-viewport" id="board-viewport">
+          <div class="board-canvas" id="board-canvas">
+            <!-- Tiles rendered here -->
+          </div>
+        </div>
+        <div class="board-ends" id="board-ends">
+          <!-- End value indicators -->
+        </div>
+      </div>
+
+      <!-- Right (J3 — adversário) -->
+      <div class="player-zone zone-right" id="zone-p3">
+        <div class="ai-hand-label vertical-label">
+          <span class="ai-name" id="name-p3">Jogador 4</span>
+          <span class="ai-count" id="count-p3">6</span>
+          <span class="ai-team-badge team-b">EQ.B</span>
+          <span class="pass-badge hidden" id="pass-p3">PASSOU</span>
+        </div>
+        <div class="ai-hand vertical" id="hand-p3"></div>
+      </div>
+    </div>
+
+    <!-- Player Bottom (J0) -->
+    <div class="player-zone zone-bottom" id="zone-p0">
+      <div class="human-hand-wrap">
+        <div class="hand-scroll" id="hand-p0"></div>
+      </div>
+      <div class="ai-hand-label" style="text-align:center; margin-top:4px;">
+        <span class="ai-name" style="color:#f0c040;">Você (Jogador 1)</span>
+        <span class="ai-team-badge team-a">EQUIPE A</span>
+        <span class="pass-badge hidden" id="pass-p0">PASSOU</span>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="status-bar">
+      <div class="status-msg" id="status-msg">Aguardando...</div>
+      <div class="side-choice hidden" id="side-choice">
+        <div class="side-btn focused" id="side-btn-left">⟵ ESQUERDA <span id="side-left-end"></span></div>
+        <div class="side-btn" id="side-btn-right">DIREITA ⟶ <span id="side-right-end"></span></div>
+      </div>
+    </div>
+
+  </div><!-- end screen-game -->
+
+  <!-- ═══════════════════════════════════════
+       OVERLAY: Round Result
+  ═══════════════════════════════════════ -->
+  <div id="overlay-round" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-icon" id="round-icon">🏆</div>
+      <h2 class="overlay-title" id="round-title">BATIDA COMUM!</h2>
+      <div class="overlay-details" id="round-details"></div>
+      <div class="overlay-score" id="round-score-display"></div>
+      <div class="overlay-locked-info hidden" id="locked-info"></div>
+      <button class="overlay-btn focused" id="round-btn-continue">Próxima Rodada → <kbd>Enter</kbd></button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       OVERLAY: Match End
+  ═══════════════════════════════════════ -->
+  <div id="overlay-match" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-icon" id="match-icon">🏆</div>
+      <h2 class="overlay-title" id="match-title">VITÓRIA!</h2>
+      <p class="overlay-sub" id="match-sub"></p>
+      <div class="overlay-final-score" id="match-final-score"></div>
+      <nav class="menu-list" id="match-menu" style="margin-top:20px;">
+        <div class="menu-item focused" data-action="newgame"><span class="mi-icon">🔄</span><span class="mi-text">Nova Partida</span></div>
+        <div class="menu-item" data-action="menu"><span class="mi-icon">🏠</span><span class="mi-text">Menu Principal</span></div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       OVERLAY: AI Thinking / Event toast
+  ═══════════════════════════════════════ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script>/* ═══════════════════════════════════════════════════════════════════════
+   DOMINÓ BRASILEIRO — SCRIPT COMPLETO
+   
+   MÓDULOS:
+   1. PipRenderer      — renderiza pips reais em grids 3×3
+   2. TileFactory      — cria elementos DOM de peças
+   3. DominoSet        — conjunto e distribuição
+   4. BoardEngine      — estado e layout do tabuleiro
+   5. BoardRenderer    — renderiza tabuleiro no DOM
+   6. GameRules        — todas as regras brasileiras
+   7. AI               — inteligência artificial 3 níveis
+   8. SoundEngine      — feedback sonoro via Web Audio
+   9. InputManager     — somente ← → Enter
+   10. GameController  — orquestra tudo
+═══════════════════════════════════════════════════════════════════════ */
+
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   1. PipRenderer — pip positions for values 0-6
+═══════════════════════════════════════════════════════ */
+const PipRenderer = {
+  // Each value maps to array of [row,col] grid positions (1-3)
+  POSITIONS: {
+    0: [],
+    1: [[2,2]],
+    2: [[1,1],[3,3]],
+    3: [[1,1],[2,2],[3,3]],
+    4: [[1,1],[1,3],[3,1],[3,3]],
+    5: [[1,1],[1,3],[2,2],[3,1],[3,3]],
+    6: [[1,1],[1,3],[2,1],[2,3],[3,1],[3,3]],
+  },
+
+  /** Create a pip-field element for a given value */
+  createField(value) {
+    const field = document.createElement('div');
+    field.className = 'pip-field';
+    const positions = this.POSITIONS[value] || [];
+    // Create 9 cells, place dots on correct positions
+    for (let r = 1; r <= 3; r++) {
+      for (let c = 1; c <= 3; c++) {
+        const cell = document.createElement('div');
+        cell.style.gridArea = `${r}/${c}`;
+        cell.style.display = 'flex';
+        cell.style.alignItems = 'center';
+        cell.style.justifyContent = 'center';
+        if (positions.some(([pr, pc]) => pr === r && pc === c)) {
+          const dot = document.createElement('div');
+          dot.className = 'pip-dot';
+          cell.appendChild(dot);
+        }
+        field.appendChild(cell);
+      }
+    }
+    return field;
+  }
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   2. TileFactory — creates DOM tile elements
+═══════════════════════════════════════════════════════ */
+const TileFactory = {
+
+  /**
+   * Create a domino tile element
+   * @param {number|null} a - left/top value (null = back)
+   * @param {number|null} b - right/bottom value (null = back)
+   * @param {string} sizeClass - 'hand-size'|'board-h'|'board-v'|'small-h'|'small-v'|'side-h'|'side-v'
+   * @param {boolean} isVertical - orientation
+   * @returns {HTMLElement}
+   */
+  create(a, b, sizeClass, isVertical = false) {
+    const tile = document.createElement('div');
+    tile.className = 'domino-tile';
+
+    const isFaceUp = a !== null && b !== null;
+
+    if (!isFaceUp) {
+      // Back of tile
+      tile.classList.add('tile-back');
+      if (isVertical) {
+        tile.classList.add(sizeClass.replace('-h','-v'));
+      } else {
+        tile.classList.add(sizeClass);
+      }
+      return tile;
+    }
+
+    // Face up tile
+    if (isVertical) {
+      tile.classList.add('vertical');
+      // Use vertical size class
+      const vClass = sizeClass.includes('-h') ? sizeClass.replace('-h','-v') : sizeClass;
+      tile.classList.add(vClass);
+    } else {
+      tile.classList.add('horizontal');
+      tile.classList.add(sizeClass);
+    }
+
+    const halfA = document.createElement('div');
+    halfA.className = 'tile-half';
+    halfA.appendChild(PipRenderer.createField(a));
+
+    const divider = document.createElement('div');
+    divider.className = 'tile-divider';
+
+    const halfB = document.createElement('div');
+    halfB.className = 'tile-half';
+    halfB.appendChild(PipRenderer.createField(b));
+
+    tile.appendChild(halfA);
+    tile.appendChild(divider);
+    tile.appendChild(halfB);
+
+    return tile;
+  },
+
+  /** Create back-facing tile for AI hands */
+  createBack(sizeClass, isVertical = false) {
+    return this.create(null, null, sizeClass, isVertical);
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   3. DominoSet — generates and shuffles the full set
+═══════════════════════════════════════════════════════ */
+const DominoSet = {
+  /** Generate complete double-6 set (28 tiles) */
+  generate() {
+    const tiles = [];
+    for (let a = 0; a <= 6; a++) {
+      for (let b = a; b <= 6; b++) {
+        tiles.push({ a, b, id: `${a}-${b}` });
+      }
+    }
+    return tiles;
+  },
+
+  shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  },
+
+  /**
+   * Deal: 4 players × 6 tiles, 4 in dorme
+   * Returns { hands: [[],[],[],[]], dorme: [] }
+   */
+  deal() {
+    const shuffled = this.shuffle(this.generate());
+    return {
+      hands: [
+        shuffled.slice(0, 6),
+        shuffled.slice(6, 12),
+        shuffled.slice(12, 18),
+        shuffled.slice(18, 24),
+      ],
+      dorme: shuffled.slice(24, 28),
+    };
+  },
+
+  /**
+   * Find opening player for first round.
+   * Returns { player, double } where double is the tile they must play.
+   * If highest double is in dorme, descends: 6-6, 5-5, 4-4...
+   */
+  findFirstPlayer(hands) {
+    for (let d = 6; d >= 0; d--) {
+      for (let p = 0; p < 4; p++) {
+        const found = hands[p].find(t => t.a === d && t.b === d);
+        if (found) return { player: p, forcedTile: found, double: d };
+      }
+    }
+    // All doubles in dorme — fallback: player 0 goes first with any tile
+    return { player: 0, forcedTile: null, double: -1 };
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   4. BoardEngine — manages board state, layout positions
+═══════════════════════════════════════════════════════ */
+const BoardEngine = {
+  // Placed tiles: [{a, b, x, y, isVertical, isDouble, uid}]
+  tiles: [],
+  leftEnd: -1,
+  rightEnd: -1,
+  isEmpty: true,
+  _uidCounter: 0,
+
+  _nextUid() { return String(++this._uidCounter); },
+
+  // Layout constants
+  TW: 64,   // tile width (horizontal)
+  TH: 32,   // tile height (horizontal)
+  GAP: 4,   // gap between tiles
+
+  reset() {
+    this.tiles = [];
+    this.leftEnd = -1;
+    this.rightEnd = -1;
+    this.isEmpty = true;
+    this._uidCounter = 0;
+  },
+
+  /**
+   * Get all playable tile indices from a hand
+   */
+  getPlayable(hand) {
+    if (this.isEmpty) return hand.map((_, i) => i); // first tile: any
+    return hand.reduce((acc, t, i) => {
+      if (this.canPlay(t)) acc.push(i);
+      return acc;
+    }, []);
+  },
+
+  canPlay(tile) {
+    if (this.isEmpty) return true;
+    return tile.a === this.leftEnd || tile.b === this.leftEnd ||
+           tile.a === this.rightEnd || tile.b === this.rightEnd;
+  },
+
+  canPlayOnSide(tile, side) {
+    if (this.isEmpty) return true;
+    const end = side === 'left' ? this.leftEnd : this.rightEnd;
+    return tile.a === end || tile.b === end;
+  },
+
+  /**
+   * Orient tile so that touching face matches the end.
+   * Returns { a, b } where b is the new exposed end.
+   * 'a' touches the board end, 'b' becomes new extremity.
+   */
+  orientTile(tile, end) {
+    if (tile.a === end) return { a: tile.a, b: tile.b }; // a touches, b exposed
+    return { a: tile.b, b: tile.a }; // flip: b touches, a exposed
+  },
+
+  /**
+   * Place a tile on the board.
+   * ─────────────────────────────────────────────────────
+   * Orientation convention used throughout:
+   *   record.a  = the half that was placed TOUCHING the chain
+   *   record.b  = the half that becomes the NEW EXPOSED END
+   *
+   * For RIGHT placement:
+   *   We need tile's touching face == rightEnd.
+   *   After placement, rightEnd becomes the other face.
+   *
+   * For LEFT placement:
+   *   We need tile's touching face == leftEnd.
+   *   The touching face goes on the RIGHT side of the tile
+   *   (because the tile is placed to the left of the chain).
+   *   After placement, leftEnd becomes the other face.
+   * ─────────────────────────────────────────────────────
+   */
+  place(tile, side) {
+    const isDouble = tile.a === tile.b;
+    let record;
+
+    if (this.isEmpty) {
+      // First tile — store as-is; a=left exposed, b=right exposed
+      record = {
+        a: tile.a,
+        b: tile.b,
+        x: 0, y: 0,
+        isVertical: false,
+        isDouble,
+        side: 'first',
+        uid: this._nextUid(),
+      };
+      this.tiles.push(record);
+      this.leftEnd  = tile.a;
+      this.rightEnd = tile.b;
+      this.isEmpty  = false;
+
+    } else if (side === 'right') {
+      // The face touching the chain must equal rightEnd.
+      // If tile.a == rightEnd → touching=a, exposed=b
+      // If tile.b == rightEnd → touching=b, exposed=a  (flip)
+      let touching, exposed;
+      if (tile.a === this.rightEnd) {
+        touching = tile.a; exposed = tile.b;
+      } else {
+        // tile.b must equal rightEnd (validated before calling)
+        touching = tile.b; exposed = tile.a;
+      }
+      // For a double both values are the same — no flip needed
+      record = {
+        a: touching, b: exposed,
+        x: 0, y: 0, // positions assigned by recalcLayout
+        isVertical: isDouble,
+        isDouble,
+        side: 'right',
+        uid: this._nextUid(),
+      };
+      this.tiles.push(record);
+      this.rightEnd = exposed;
+
+    } else {
+      // LEFT placement
+      // The face touching the chain must equal leftEnd.
+      // In the visual layout the NEW tile is placed to the LEFT of the chain,
+      // so its RIGHT half is the touching face and LEFT half is the new exposed end.
+      // We store: a = new exposed (new leftEnd), b = touching face (== old leftEnd)
+      let touching, exposed;
+      if (tile.a === this.leftEnd) {
+        touching = tile.a; exposed = tile.b;
+      } else {
+        touching = tile.b; exposed = tile.a;
+      }
+      // store: a = exposed end (left), b = touching (right — connects to chain)
+      record = {
+        a: exposed, b: touching,
+        x: 0, y: 0,
+        isVertical: isDouble,
+        isDouble,
+        side: 'left',
+        uid: this._nextUid(),
+      };
+      this.tiles.unshift(record);  // prepend — leftmost
+      this.leftEnd = exposed;
+    }
+
+    return record;
+  },
+
+  _getLeftmostTile() {
+    return this.tiles[0];
+  },
+  _getRightmostTile() {
+    return this.tiles[this.tiles.length - 1];
+  },
+
+  /**
+   * Recalculate all tile positions — pixel-perfect snake layout.
+   *
+   * Tracks the ACTUAL pixel edge after each tile so doubles (narrow
+   * footprint = TH) don't create gaps relative to normal tiles (TW).
+   *
+   * Snake goes: → → → (turn-down) ← ← ← (turn-down) → → → …
+   * The "turn" tile is placed at the last column, then the cursor
+   * descends by ROW_H + GAP and reverses direction.
+   *
+   * All tiles are vertically centred inside ROW_H = TW.
+   */
+  recalcLayout(containerW, containerH) {
+    if (this.tiles.length === 0) return;
+
+    const TW = this.TW, TH = this.TH, GAP = this.GAP;
+    const ROW_H = TW;  // doubles (vertical) are TW tall; normals are TH tall
+
+    // Number of normal-tile slots per row (minimum 4)
+    const maxPerRow = Math.max(4, Math.floor((containerW - 40) / (TW + GAP)));
+
+    let dir = 1;      // +1 = right, -1 = left
+    let col = 0;      // how many tiles placed in current row
+    let rowY = 0;     // top pixel of current row
+
+    // curX: for dir=+1 it is the LEFT edge of the next tile to place
+    //       for dir=-1 it is the RIGHT edge of the next tile to place
+    let curX = 0;
+
+    for (let i = 0; i < this.tiles.length; i++) {
+      const t = this.tiles[i];
+      const fw = t.isVertical ? TH : TW;   // footprint width in travel direction
+      const fh = t.isVertical ? TW : TH;   // footprint height
+
+      // Vertically centre tile within ROW_H
+      const ty = rowY + Math.floor((ROW_H - fh) / 2);
+
+      if (dir === 1) {
+        t.x = curX;
+        t.y = ty;
+        curX += fw + GAP;           // advance right edge
+      } else {
+        t.x = curX - fw;            // left edge = right edge − width
+        t.y = ty;
+        curX -= fw + GAP;           // retreat left
+      }
+
+      col++;
+
+      // Wrap to next row after maxPerRow tiles (but not on the very last tile)
+      if (col >= maxPerRow && i < this.tiles.length - 1) {
+        col = 0;
+        rowY += ROW_H + GAP;
+        dir *= -1;
+
+        // The next row starts from the same LEFT edge (dir=+1)
+        // or from the same RIGHT edge (dir=-1).
+        // We pin to clean 0-based column grid so rows align perfectly.
+        if (dir === 1) {
+          curX = 0;
+        } else {
+          // rightmost pixel = maxPerRow columns of TW each, minus trailing gap
+          curX = maxPerRow * (TW + GAP) - GAP;
+        }
+      }
+    }
+  },
+
+  /** Compute bounding box of all placed tiles */
+  getBounds() {
+    if (this.tiles.length === 0) return { minX: 0, minY: 0, maxX: 100, maxY: 60 };
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    const TW = this.TW, TH = this.TH;
+    for (const t of this.tiles) {
+      const w = t.isVertical ? TH : TW;
+      const h = t.isVertical ? TW : TH;
+      minX = Math.min(minX, t.x);
+      minY = Math.min(minY, t.y);
+      maxX = Math.max(maxX, t.x + w);
+      maxY = Math.max(maxY, t.y + h);
+    }
+    return { minX, minY, maxX, maxY };
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   5. BoardRenderer — renders board tiles in DOM
+═══════════════════════════════════════════════════════ */
+const BoardRenderer = {
+  canvas: null,
+  viewport: null,
+
+  init() {
+    this.canvas = document.getElementById('board-canvas');
+    this.viewport = document.getElementById('board-viewport');
+  },
+
+  clear() {
+    this.canvas.innerHTML = '';
+    this.canvas.style.transform = 'translate(-50%, -50%)';
+  },
+
+  /** Add a single tile to the board with placement animation */
+  addTile(record) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'board-tile-wrapper tile-placing';
+    wrapper.dataset.tileUid = record.uid;
+    // Initial position will be corrected immediately by fitView()
+    wrapper.style.left = '0px';
+    wrapper.style.top  = '0px';
+
+    const tileEl = TileFactory.create(
+      record.a, record.b,
+      record.isVertical ? 'board-v' : 'board-h',
+      record.isVertical
+    );
+    wrapper.appendChild(tileEl);
+    this.canvas.appendChild(wrapper);
+
+    wrapper.addEventListener('animationend', () => wrapper.classList.remove('tile-placing'), { once: true });
+
+    // fitView calls recalcLayout which updates record.x/y, then repositions all wrappers
+    this.fitView();
+    this.updateEndIndicators();
+  },
+
+  /** Rebuild entire board from BoardEngine state (after recalcLayout) */
+  rebuildAll() {
+    this.canvas.innerHTML = '';
+    for (const record of BoardEngine.tiles) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'board-tile-wrapper';
+      wrapper.dataset.tileUid = record.uid;
+      wrapper.style.left = record.x + 'px';
+      wrapper.style.top = record.y + 'px';
+
+      const tileEl = TileFactory.create(
+        record.a, record.b,
+        record.isVertical ? 'board-v' : 'board-h',
+        record.isVertical
+      );
+      wrapper.appendChild(tileEl);
+      this.canvas.appendChild(wrapper);
+    }
+    this.fitView();
+    this.updateEndIndicators();
+  },
+
+  fitView() {
+    if (BoardEngine.tiles.length === 0) return;
+    const vpW = this.viewport.clientWidth || 400;
+    const vpH = this.viewport.clientHeight || 280;
+
+    BoardEngine.recalcLayout(vpW, vpH);
+
+    // Re-position wrappers by tile index order (which matches DOM append order
+    // for right-placements, but LEFT placements use unshift — so we must match
+    // by the wrapper's data-tile-order attribute set at creation time).
+    // Simpler: rebuild wrapper order by querying all wrappers and matching via
+    // their data-tile-id to the tile record's tileUid.
+    const wrappers = this.canvas.querySelectorAll('.board-tile-wrapper');
+    // wrappers are in DOM insertion order; BoardEngine.tiles are in logical order
+    // (left-to-right chain). These can diverge after a left-placement.
+    // We use data-tile-uid on each wrapper to match.
+    const wrapperMap = {};
+    wrappers.forEach(w => { wrapperMap[w.dataset.tileUid] = w; });
+
+    BoardEngine.tiles.forEach(t => {
+      const w = wrapperMap[t.uid];
+      if (w) {
+        w.style.left = t.x + 'px';
+        w.style.top  = t.y + 'px';
+      }
+    });
+
+    // Scale to fit
+    const bounds = BoardEngine.getBounds();
+    const boardW = bounds.maxX - bounds.minX + 20;
+    const boardH = bounds.maxY - bounds.minY + 20;
+    const scaleX = Math.min(1, vpW / (boardW + 20));
+    const scaleY = Math.min(1, vpH / (boardH + 20));
+    const scale  = Math.min(scaleX, scaleY, 1.0);
+
+    const cx = (bounds.minX + bounds.maxX) / 2;
+    const cy = (bounds.minY + bounds.maxY) / 2;
+    this.canvas.style.transform = `translate(-50%, -50%) translate(${-cx}px, ${-cy}px) scale(${scale})`;
+  },
+
+  updateEndIndicators() {
+    const el = document.getElementById('board-ends');
+    if (!el) return;
+    if (BoardEngine.isEmpty) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+      <div class="end-marker"><div class="end-marker-dot" style="background:rgba(74,144,217,0.6)"></div>ESQ: <strong>${BoardEngine.leftEnd}</strong></div>
+      <div class="end-marker"><div class="end-marker-dot"></div>DIR: <strong>${BoardEngine.rightEnd}</strong></div>
+    `;
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   6. GameRules — all Brazilian domino rules
+═══════════════════════════════════════════════════════ */
+const GameRules = {
+  WIN_SCORE: 6,
+
+  // Teams: A=[0,2], B=[1,3]
+  TEAMS: [[0, 2], [1, 3]],
+  TEAM_NAMES: ['Equipe A', 'Equipe B'],
+
+  getTeamOf(player) {
+    return this.TEAMS[0].includes(player) ? 0 : 1;
+  },
+  getPartnerOf(player) {
+    const team = this.TEAMS[this.getTeamOf(player)];
+    return team.find(p => p !== player);
+  },
+
+  /**
+   * Determine round result when a player wins by emptying hand.
+   * @param {number} winner - player index
+   * @param {object} lastTile - the tile they just played
+   * @param {number} leftEnd - left extremity before this play
+   * @param {number} rightEnd - right extremity before this play
+   * @param {number[]} roundHistory - array of winning team indices (0 or 1)
+   * @returns {{ type, points, teamIdx, description, emoji }}
+   */
+  calcWinResult(winner, lastTile, leftEnd, rightEnd, roundHistory) {
+    const teamIdx = this.getTeamOf(winner);
+
+    // Check Cruzada: last tile is double AND fits both ends
+    const isDouble = lastTile.a === lastTile.b;
+    // "Lá e lô" condition: tile matches BOTH extremities
+    const fitsLeft = lastTile.a === leftEnd || lastTile.b === leftEnd;
+    const fitsRight = lastTile.a === rightEnd || lastTile.b === rightEnd;
+    const fitsOnBothSides = fitsLeft && fitsRight && leftEnd !== rightEnd;
+
+    if (isDouble && fitsOnBothSides) {
+      return {
+        type: 'cruzada',
+        points: 6,
+        teamIdx,
+        description: `${this.TEAM_NAMES[teamIdx]} fez BATIDA CRUZADA! Dupla que encaixa nos dois lados.`,
+        emoji: '💥',
+        label: 'BATIDA CRUZADA',
+      };
+    }
+    if (fitsOnBothSides) {
+      return {
+        type: 'la_e_lo',
+        points: 3,
+        teamIdx,
+        description: `${this.TEAM_NAMES[teamIdx]} fez LÁ E LÔ! Última peça encaixava nos dois lados.`,
+        emoji: '🎯',
+        label: 'LÁ E LÔ',
+      };
+    }
+    if (isDouble) {
+      return {
+        type: 'carroca',
+        points: 2,
+        teamIdx,
+        description: `${this.TEAM_NAMES[teamIdx]} fez BATIDA DE CARROÇA! Última peça é dupla.`,
+        emoji: '⚡',
+        label: 'BATIDA DE CARROÇA',
+      };
+    }
+    return {
+      type: 'common',
+      points: 1,
+      teamIdx,
+      description: `${this.TEAM_NAMES[teamIdx]} fez BATIDA COMUM!`,
+      emoji: '✅',
+      label: 'BATIDA COMUM',
+    };
+  },
+
+  /**
+   * Resolve a blocked game (all 4 pass consecutively).
+   * @param {Array[]} hands - current hands of all 4 players
+   * @returns {{ type, points, teamIdx, description, emoji, sums }}
+   */
+  resolveBlocked(hands) {
+    const sums = hands.map(h => h.reduce((s, t) => s + t.a + t.b, 0));
+
+    // Vencedor = jogador individual com menor soma
+    let minSum = Infinity;
+    let winnerPlayer = -1;
+    for (let p = 0; p < 4; p++) {
+      if (sums[p] < minSum) { minSum = sums[p]; winnerPlayer = p; }
+    }
+
+    // Verificar empate entre dois ou mais jogadores
+    const tied = sums.filter(s => s === minSum).length > 1;
+    const teamIdx = tied ? -1 : this.getTeamOf(winnerPlayer);
+
+    const PLAYER_NAMES = ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4'];
+
+    return {
+      type: 'locked',
+      points: tied ? 0 : 1,
+      teamIdx,
+      winnerPlayer: tied ? -1 : winnerPlayer,
+      isDraw: tied,
+      sums,
+      description: tied
+        ? 'JOGO TRANCADO — EMPATE! Ninguém pontua.'
+        : `JOGO TRANCADO — ${PLAYER_NAMES[winnerPlayer]} venceu com menor soma (${minSum}).`,
+      emoji: tied ? '🤝' : '🔒',
+      label: 'JOGO TRANCADO',
+    };
+  },
+
+  /** Hand sum for a player */
+  handSum(hand) {
+    return hand.reduce((s, t) => s + t.a + t.b, 0);
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   7. AI — Strategic Domino AI (Easy / Medium / Hard)
+═══════════════════════════════════════════════════════ */
+const AI = {
+  level: 'medium', // 'easy' | 'medium' | 'hard'
+
+  // Memory: track played tiles (hard difficulty)
+  playedTiles: [],
+  recordPlay(tile) { this.playedTiles.push({ ...tile }); },
+  resetMemory() { this.playedTiles = []; },
+
+  /**
+   * Choose best tile to play.
+   * @param {number} player - AI player index (1,2,3)
+   * @param {Array} hand - tiles in hand
+   * @param {number} leftEnd - board left end
+   * @param {number} rightEnd - board right end
+   * @param {boolean} boardEmpty
+   * @param {number[]} handCounts - tiles per player [p0,p1,p2,p3]
+   * @returns {{ tileIdx, side } | null} null = pass
+   */
+  choose(player, hand, leftEnd, rightEnd, boardEmpty, handCounts) {
+    const playable = BoardEngine.getPlayable(hand);
+    if (playable.length === 0) return null;
+
+    if (this.level === 'easy') {
+      return this._easyChoice(hand, playable, leftEnd, rightEnd, boardEmpty);
+    } else if (this.level === 'medium') {
+      return this._mediumChoice(player, hand, playable, leftEnd, rightEnd, boardEmpty, handCounts);
+    } else {
+      return this._hardChoice(player, hand, playable, leftEnd, rightEnd, boardEmpty, handCounts);
+    }
+  },
+
+  _pickSide(tile, leftEnd, rightEnd, boardEmpty, prefer) {
+    if (boardEmpty) return 'right';
+    const canL = BoardEngine.canPlayOnSide(tile, 'left');
+    const canR = BoardEngine.canPlayOnSide(tile, 'right');
+    if (canL && canR) return prefer || 'right';
+    if (canL) return 'left';
+    return 'right';
+  },
+
+  _easyChoice(hand, playable, leftEnd, rightEnd, boardEmpty) {
+    const idx = playable[Math.floor(Math.random() * playable.length)];
+    return { tileIdx: idx, side: this._pickSide(hand[idx], leftEnd, rightEnd, boardEmpty) };
+  },
+
+  _mediumChoice(player, hand, playable, leftEnd, rightEnd, boardEmpty, handCounts) {
+    const partner = GameRules.getPartnerOf(player);
+    // Score each playable tile
+    let best = null, bestScore = -Infinity;
+
+    for (const idx of playable) {
+      const t = hand[idx];
+      let score = t.a + t.b; // base: play high value first
+
+      // Prefer doubles (they can only be played on one value)
+      if (t.a === t.b) score += 4;
+
+      // If partner has few tiles, play to help them close
+      if (handCounts[partner] <= 2) score += 3;
+
+      // Prefer to not open values opponents might need
+      const side = this._pickSide(t, leftEnd, rightEnd, boardEmpty, 'right');
+      if (score > bestScore) {
+        bestScore = score;
+        best = { tileIdx: idx, side };
+      }
+    }
+    return best;
+  },
+
+  _hardChoice(player, hand, playable, leftEnd, rightEnd, boardEmpty, handCounts) {
+    const partner = GameRules.getPartnerOf(player);
+    const oppTeam = GameRules.TEAMS.find(t => !t.includes(player));
+    const opps = oppTeam;
+
+    // Count how many of each pip value is still "out" (not in my hand, not played)
+    const inMyHand = {};
+    for (let v = 0; v <= 6; v++) {
+      inMyHand[v] = hand.filter(t => t.a === v || t.b === v).length;
+    }
+
+    // Count played
+    const played = {};
+    for (let v = 0; v <= 6; v++) played[v] = 0;
+    for (const pt of this.playedTiles) {
+      played[pt.a]++;
+      if (pt.a !== pt.b) played[pt.b]++;
+    }
+
+    // Remaining unknown of each value
+    const unknown = {};
+    // Total tiles with each value in the full set:
+    const totalPerVal = [7, 7, 7, 7, 7, 7, 7]; // e.g. 7 tiles contain a "0": 0/0,0/1,...,0/6
+    for (let v = 0; v <= 6; v++) {
+      unknown[v] = Math.max(0, totalPerVal[v] - inMyHand[v] - played[v]);
+    }
+
+    let best = null, bestScore = -Infinity;
+
+    for (const idx of playable) {
+      const t = hand[idx];
+      let score = 0;
+
+      // Base: play tiles with high remaining unknowns (less useful to keep)
+      score += t.a + t.b;
+
+      // Prefer doubles
+      if (t.a === t.b) score += 5;
+
+      // Block opponents: play values that opponents might be stuck on
+      // If an end value has many unknowns, opponents might not have it
+      const canL = !boardEmpty && BoardEngine.canPlayOnSide(t, 'left');
+      const canR = boardEmpty || BoardEngine.canPlayOnSide(t, 'right');
+
+      let preferredSide = 'right';
+
+      if (canL && canR) {
+        // Expose value that is harder for opponents
+        const exposeL = t.a === leftEnd ? t.b : t.a;
+        const exposeR = t.b === rightEnd ? t.a : t.b;
+        // Expose value with fewer unknowns = harder for opponents
+        if (unknown[exposeL] < unknown[exposeR]) preferredSide = 'left';
+        else preferredSide = 'right';
+      } else if (canL) { preferredSide = 'left'; }
+      else { preferredSide = 'right'; }
+
+      // If partner is winning, protect by not opening dangerous ends
+      if (handCounts[partner] <= 2) score += 4;
+
+      // Opponent close to winning: be aggressive
+      const oppMin = Math.min(...opps.map(p => handCounts[p]));
+      if (oppMin <= 2) score += 3;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = { tileIdx: idx, side: preferredSide };
+      }
+    }
+    return best;
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   8. SoundEngine — Web Audio feedback
+═══════════════════════════════════════════════════════ */
+const SoundEngine = {
+  ctx: null,
+
+  _getCtx() {
+    if (!this.ctx) {
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (e) { return null; }
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+
+  play(type) {
+    const ctx = this._getCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    const configs = {
+      nav:    { freq: 400, type: 'sine',     dur: 0.05, vol: 0.06 },
+      select: { freq: 560, type: 'sine',     dur: 0.1,  vol: 0.1  },
+      place:  { freq: 320, type: 'triangle', dur: 0.2,  vol: 0.15 },
+      pass:   { freq: 200, type: 'sawtooth', dur: 0.25, vol: 0.08 },
+      win:    { freq: 660, type: 'sine',     dur: 0.6,  vol: 0.15 },
+      lose:   { freq: 220, type: 'sine',     dur: 0.6,  vol: 0.1  },
+      error:  { freq: 180, type: 'sawtooth', dur: 0.2,  vol: 0.1  },
+      locked: { freq: 260, type: 'triangle', dur: 0.4,  vol: 0.1  },
+    };
+
+    const cfg = configs[type] || configs.nav;
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(cfg.freq, t);
+      if (type === 'win') osc.frequency.setValueAtTime(880, t + 0.2);
+      osc.type = cfg.type;
+      gain.gain.setValueAtTime(cfg.vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + cfg.dur);
+      osc.start(t);
+      osc.stop(t + cfg.dur);
+    } catch (e) {}
+  },
+
+  unlock() { this._getCtx(); },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   9. InputManager — only ← → Enter
+═══════════════════════════════════════════════════════ */
+const InputManager = {
+  _handler: null,
+
+  /**
+   * Bind keyboard: only ArrowLeft, ArrowRight, Enter.
+   * All other keys ignored.
+   */
+  init(callback) {
+    if (this._handler) document.removeEventListener('keydown', this._handler);
+    this._handler = (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        SoundEngine.unlock();
+        const dir = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+        const isEnter = e.key === 'Enter';
+        callback(dir, isEnter);
+      }
+    };
+    document.addEventListener('keydown', this._handler);
+  },
+
+  destroy() {
+    if (this._handler) {
+      document.removeEventListener('keydown', this._handler);
+      this._handler = null;
+    }
+  },
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   10. GameController — orchestrates the entire game
+═══════════════════════════════════════════════════════ */
+const GameController = {
+
+  // ── Configuration ──
+  difficulty: 'medium',
+
+  // ── Match state ──
+  matchScores: [0, 0],    // [teamA, teamB]
+  roundHistory: [],       // array of teamIdx winners (or -1 for draw)
+  roundNumber: 0,
+  lastWinnerTeam: null,   // which team won last round
+
+  // ── Round state ──
+  hands: [[], [], [], []],
+  dorme: [],
+  currentPlayer: 0,
+  passCount: 0,           // consecutive passes in current round
+  isFirstRound: true,
+  forcedOpenTile: null,   // on first round, must play this specific tile
+  openingPlayer: 0,
+
+  // ── Turn state ──
+  phase: 'idle',
+  /* phases:
+     'idle'        — nothing happening
+     'select-tile' — human selecting which tile to play
+     'select-side' — human choosing left or right
+     'pass-confirm' — human confirming they have no moves (press Enter to pass)
+     'ai-thinking' — AI is processing
+     'who-starts'  — human choosing who starts next round
+     'round-result' — overlay showing round result
+     'match-end'   — overlay showing match end
+     'menu'        — in some menu screen
+  */
+  selectedTileIdx: -1,   // index in human hand of focused tile
+  sideChoice: 'right',   // 'left' | 'right'
+  handFocusIdx: 0,
+  prevBoardLeft: -1,     // board ends BEFORE the last play (for scoring)
+  prevBoardRight: -1,
+
+  // ── Who-starts state ──
+  whoStartsChoice: 0,    // 0=me, 1=partner
+  winnerTeamForNextRound: 0,
+
+  // ── Match-end menu state ──
+  matchMenuFocus: 0,
+
+  // ─────────────────────────────────────────────
+  init() {
+    BoardRenderer.init();
+    AI.level = this.difficulty;
+    InputManager.init((dir, enter) => this.handleInput(dir, enter));
+    this.showScreen('menu');
+    this._initMenuNav();
+  },
+
+  // ─────────────────────────────────────────────
+  // SCREEN MANAGEMENT
+  // ─────────────────────────────────────────────
+  showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => {
+      s.classList.remove('active');
+      s.style.display = '';
+    });
+    const el = document.getElementById('screen-' + id);
+    if (el) {
+      el.classList.add('active');
+      el.style.display = 'flex';
+    }
+    this.phase = 'menu';
+  },
+
+  _setCurrentScreen() {
+    const active = document.querySelector('.screen.active');
+    return active ? active.id.replace('screen-', '') : null;
+  },
+
+  // ─────────────────────────────────────────────
+  // MENU NAVIGATION
+  // ─────────────────────────────────────────────
+  _menuFocus: 0,
+  _diffFocus: 0,
+  _whoFocus: 0,
+
+  _initMenuNav() {
+    this._menuFocus = 0;
+    this._diffFocus = 0;
+    this._whoFocus = 0;
+  },
+
+  _navList(listId, focusProp, count, dir) {
+    const items = document.querySelectorAll(`#${listId} .menu-item`);
+    items[this[focusProp]].classList.remove('focused');
+    this[focusProp] = ((this[focusProp] + dir) % count + count) % count;
+    items[this[focusProp]].classList.add('focused');
+    SoundEngine.play('nav');
+  },
+
+  _activateMenuList(listId, focusProp) {
+    const items = document.querySelectorAll(`#${listId} .menu-item`);
+    items.forEach((el, i) => el.classList.toggle('focused', i === this[focusProp]));
+  },
+
+  // ─────────────────────────────────────────────
+  // START MATCH
+  // ─────────────────────────────────────────────
+  startMatch() {
+    this.matchScores = [0, 0];
+    this.roundHistory = [];
+    this.roundNumber = 0;
+    this.lastWinnerTeam = null;
+    this.isFirstRound = true;
+    AI.resetMemory();
+    AI.level = this.difficulty;
+    this.startRound(null);
+  },
+
+  // ─────────────────────────────────────────────
+  // START ROUND
+  // ─────────────────────────────────────────────
+  startRound(winnerTeam) {
+    this.roundNumber++;
+    this.passCount = 0;
+    this.phase = 'idle';
+    this.selectedTileIdx = -1;
+    this.handFocusIdx = 0;
+
+    // Deal tiles
+    const { hands, dorme } = DominoSet.deal();
+    this.hands = hands;
+    this.dorme = dorme;
+
+    // Reset board
+    BoardEngine.reset();
+    BoardRenderer.clear();
+
+    // Hide all overlays
+    this._hideAllOverlays();
+
+    // Update UI
+    this.showScreen('game');
+    this._updateScoreUI();
+    this._updateRoundUI();
+
+    if (this.isFirstRound) {
+      // Determine who starts
+      const { player, forcedTile, double: d } = DominoSet.findFirstPlayer(hands);
+      this.openingPlayer = player;
+      this.currentPlayer = player;
+      this.forcedOpenTile = forcedTile;
+      this.isFirstRound = false;
+
+      const pName = this._playerName(player);
+      this._setTurnUI(pName);
+
+      if (d >= 0) {
+        this._showToast(`${pName} começa com o ${d}-${d}!`, 2500);
+      } else {
+        this._showToast(`${pName} abre a rodada!`, 2000);
+      }
+
+      this._buildPlayerHands();
+      setTimeout(() => this._startTurn(), 2600);
+
+    } else {
+      // Winning team chooses who starts (if team includes player 0, show menu)
+      this.winnerTeamForNextRound = winnerTeam;
+      this.forcedOpenTile = null;
+
+      if (winnerTeam === 0) {
+        // Player 0's team won — show who-starts menu
+        this._buildPlayerHands();
+        this._showWhoStartsMenu();
+      } else {
+        // AI team won — AI team decides (pick first player of that team)
+        this.openingPlayer = GameRules.TEAMS[winnerTeam][0]; // P1 (always AI)
+        this.currentPlayer = this.openingPlayer;
+        this._buildPlayerHands();
+        this._showToast(`${GameRules.TEAM_NAMES[winnerTeam]} abre a rodada. ${this._playerName(this.currentPlayer)} joga primeiro.`, 2500);
+        this._setTurnUI(this._playerName(this.currentPlayer));
+        setTimeout(() => this._startTurn(), 2800);
+      }
+    }
+  },
+
+  _showWhoStartsMenu() {
+    // Show the who-starts overlay as a screen
+    this.phase = 'who-starts';
+    this._whoFocus = 0;
+
+    document.getElementById('who-starts-team').textContent = `${GameRules.TEAM_NAMES[0]} venceu — escolha quem abre`;
+    document.getElementById('who-me-label').textContent = 'Eu (Jogador 1)';
+    const partner = GameRules.getPartnerOf(0);
+    document.getElementById('who-partner-label').textContent = `Meu Parceiro (Jogador ${partner + 1})`;
+
+    this.showScreen('who-starts');
+    this._activateMenuList('who-list', '_whoFocus');
+  },
+
+  _confirmWhoStarts() {
+    const partner = GameRules.getPartnerOf(0);
+    if (this._whoFocus === 0) {
+      this.openingPlayer = 0;
+    } else {
+      this.openingPlayer = partner;
+    }
+    this.currentPlayer = this.openingPlayer;
+    this.showScreen('game');
+    this._setTurnUI(this._playerName(this.currentPlayer));
+    this._showToast(`${this._playerName(this.currentPlayer)} abre a rodada!`, 2000);
+    setTimeout(() => this._startTurn(), 2200);
+  },
+
+  // ─────────────────────────────────────────────
+  // BUILD HAND DISPLAYS
+  // ─────────────────────────────────────────────
+  _buildPlayerHands() {
+    // Player 0: show face up
+    this._renderHumanHand();
+
+    // Players 1,2,3: show backs
+    [1, 2, 3].forEach(p => this._renderAIHandBacks(p));
+
+    // Update counts
+    this._updateHandCounts();
+  },
+
+  _renderHumanHand() {
+    const container = document.getElementById('hand-p0');
+    container.innerHTML = '';
+    const hand = this.hands[0];
+    const playable = BoardEngine.getPlayable(hand);
+
+    hand.forEach((tile, i) => {
+      const el = TileFactory.create(tile.a, tile.b, 'hand-size', false);
+      el.dataset.idx = i;
+
+      const isPlayable = playable.includes(i);
+      const isNotPlayable = playable.length > 0 && !isPlayable;
+      const isFocused = i === this.handFocusIdx && this.phase === 'select-tile';
+      const isSelected = i === this.selectedTileIdx;
+
+      if (isFocused) el.classList.add('tile-focused');
+      else if (isSelected) el.classList.add('tile-selected');
+      else if (isPlayable && !isFocused) el.classList.add('tile-playable');
+      else if (isNotPlayable) el.classList.add('tile-not-playable');
+
+      container.appendChild(el);
+    });
+
+    // Scroll focused tile into view
+    const tiles = container.querySelectorAll('.domino-tile');
+    if (tiles[this.handFocusIdx]) {
+      tiles[this.handFocusIdx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  },
+
+  _renderAIHandBacks(player) {
+    // Layout: p2 = topo (horizontal), p1 = esquerda (vertical), p3 = direita (vertical)
+    const isTop  = player === 2;
+    const count  = this.hands[player].length;
+
+    const container = document.getElementById(`hand-p${player}`);
+    container.innerHTML = '';
+
+    for (let i = 0; i < count; i++) {
+      const sizeClass  = isTop ? 'small-h' : 'side-v';
+      const isVertical = !isTop;
+      const el = TileFactory.createBack(sizeClass, isVertical);
+      container.appendChild(el);
+    }
+  },
+
+  _updateHandCounts() {
+    for (let p = 0; p < 4; p++) {
+      const count = this.hands[p].length;
+      const el = document.getElementById(`count-p${p}`);
+      if (el) el.textContent = count === 1 ? '1 peça' : `${count} peças`;
+    }
+  },
+
+  // ─────────────────────────────────────────────
+  // TURN LOGIC
+  // ─────────────────────────────────────────────
+  _startTurn() {
+    const p = this.currentPlayer;
+    this._setTurnUI(this._playerName(p));
+    this._hidePassBadges();
+
+    if (p === 0) {
+      this._humanTurn();
+    } else {
+      this._aiTurn(p);
+    }
+  },
+
+  _humanTurn() {
+    const hand = this.hands[0];
+    const playable = BoardEngine.getPlayable(hand);
+
+    if (playable.length === 0) {
+      // Must pass
+      this.phase = 'pass-confirm';
+      this._setStatus('Sem jogadas possíveis — pressione Enter para passar.', 'warn');
+      return;
+    }
+
+    // First round: must play forced tile
+    if (this.forcedOpenTile && BoardEngine.isEmpty) {
+      const fi = hand.findIndex(t => t.a === this.forcedOpenTile.a && t.b === this.forcedOpenTile.b);
+      if (fi >= 0) {
+        this.handFocusIdx = fi;
+        this.phase = 'select-tile';
+        this._setStatus(`Você deve jogar o ${this.forcedOpenTile.a}-${this.forcedOpenTile.b} (abertura obrigatória).`, 'active');
+        this._renderHumanHand();
+        return;
+      }
+    }
+
+    this.phase = 'select-tile';
+    // Focus first playable tile
+    if (!playable.includes(this.handFocusIdx)) {
+      this.handFocusIdx = playable[0];
+    }
+    this._setStatus('Escolha uma peça para jogar.', 'active');
+    this._renderHumanHand();
+  },
+
+  _aiTurn(player) {
+    this.phase = 'ai-thinking';
+    const pName = this._playerName(player);
+    this._setStatus(`${pName} está pensando...`, '');
+    this._setTurnUI(pName);
+
+    const delay1 = 1200;
+    const delay2 = 800;
+    const delay3 = 700;
+
+    setTimeout(() => {
+      const hand = this.hands[player];
+      const playable = BoardEngine.getPlayable(hand);
+
+      // Check forced open tile (first round, AI must play specific double)
+      let choice = null;
+      if (this.forcedOpenTile && BoardEngine.isEmpty) {
+        const fi = hand.findIndex(t => t.a === this.forcedOpenTile.a && t.b === this.forcedOpenTile.b);
+        if (fi >= 0) choice = { tileIdx: fi, side: 'right' };
+      }
+
+      if (!choice) {
+        const counts = this.hands.map(h => h.length);
+        choice = AI.choose(player, hand, BoardEngine.leftEnd, BoardEngine.rightEnd, BoardEngine.isEmpty, counts);
+      }
+
+      if (!choice) {
+        // Must pass
+        setTimeout(() => {
+          this._setStatus(`${pName} passou a vez.`, 'warn');
+          this._showPassBadge(player);
+          SoundEngine.play('pass');
+          this._showToast(`${pName} passou`, 1200);
+          this.passCount++;
+          setTimeout(() => this._checkAndAdvanceTurn(), delay2 + delay3);
+        }, delay2);
+        return;
+      }
+
+      const tile = hand[choice.tileIdx];
+      const sideLabel = choice.side === 'left' ? 'esquerda' : 'direita';
+
+      setTimeout(() => {
+        this._setStatus(`${pName} joga à ${sideLabel}: ${tile.a}|${tile.b}`, '');
+        this._showToast(`${pName} jogou à ${sideLabel}`, 1500);
+      }, delay2);
+
+      setTimeout(() => {
+        this._doPlaceTile(player, choice.tileIdx, choice.side);
+        AI.recordPlay(tile);
+        this.forcedOpenTile = null;
+        this.passCount = 0;
+
+        // Check win
+        if (this.hands[player].length === 0) {
+          this._handleWin(player);
+          return;
+        }
+        this._checkAndAdvanceTurn();
+      }, delay2 + delay3);
+
+    }, delay1);
+  },
+
+  // ─────────────────────────────────────────────
+  // TILE PLACEMENT
+  // ─────────────────────────────────────────────
+  _doPlaceTile(player, tileIdx, side) {
+    const hand = this.hands[player];
+    const tile = hand[tileIdx];
+
+    // Save board ends before placement (for scoring)
+    this.prevBoardLeft = BoardEngine.leftEnd;
+    this.prevBoardRight = BoardEngine.rightEnd;
+
+    // Place on board engine
+    const record = BoardEngine.place(tile, side);
+
+    // Remove from hand
+    hand.splice(tileIdx, 1);
+
+    // Render on board
+    BoardRenderer.addTile(record);
+    SoundEngine.play('place');
+
+    // Update hand display
+    if (player === 0) {
+      this.handFocusIdx = Math.min(this.handFocusIdx, hand.length - 1);
+      if (this.handFocusIdx < 0) this.handFocusIdx = 0;
+      this._renderHumanHand();
+    } else {
+      this._renderAIHandBacks(player);
+    }
+    this._updateHandCounts();
+  },
+
+  _checkAndAdvanceTurn() {
+    // Check if all 4 passed consecutively
+    if (this.passCount >= 4) {
+      this._handleLocked();
+      return;
+    }
+    // Advance to next player (anti-clockwise: 0→3→2→1→0)
+    this.currentPlayer = (this.currentPlayer + 3) % 4;
+    this._startTurn();
+  },
+
+  // ─────────────────────────────────────────────
+  // WIN / ROUND END
+  // ─────────────────────────────────────────────
+  _handleWin(winner) {
+    const lastTile = BoardEngine.tiles[BoardEngine.tiles.length - 1];
+    // lastTile has a, b — check conditions with PREVIOUS board ends
+    const result = GameRules.calcWinResult(
+      winner, lastTile,
+      this.prevBoardLeft, this.prevBoardRight,
+      this.roundHistory
+    );
+
+    this._endRound(result);
+  },
+
+  _handleLocked() {
+    const result = GameRules.resolveBlocked(this.hands);
+    this._endRound(result);
+  },
+
+  _endRound(result) {
+    this.phase = 'round-result';
+
+    // Apply points
+    if (result.teamIdx >= 0 && result.points > 0) {
+      this.matchScores[result.teamIdx] += result.points;
+      this.roundHistory.push(result.teamIdx);
+    } else {
+      this.roundHistory.push(-1); // draw
+    }
+    this.lastWinnerTeam = result.teamIdx >= 0 ? result.teamIdx : null;
+
+    this._updateScoreUI();
+    SoundEngine.play(result.teamIdx === 0 ? 'win' : result.teamIdx === 1 ? 'lose' : 'locked');
+
+    // Show result overlay
+    this._showRoundResult(result);
+
+    // Check match end
+    if (result.teamIdx >= 0 && this.matchScores[result.teamIdx] >= GameRules.WIN_SCORE) {
+      setTimeout(() => this._showMatchEnd(result.teamIdx), 500);
+    }
+  },
+
+  _showRoundResult(result) {
+    const overlay = document.getElementById('overlay-round');
+    overlay.classList.remove('hidden');
+
+    document.getElementById('round-icon').textContent = result.emoji;
+
+    const titleEl = document.getElementById('round-title');
+    titleEl.textContent = result.label;
+    titleEl.className = 'overlay-title ' + (result.teamIdx === 0 ? 'good' : result.teamIdx === -1 ? 'info' : 'bad');
+    if (result.type === 'cruzada') titleEl.className = 'overlay-title wow';
+
+    document.getElementById('round-details').textContent = result.description;
+
+    const ptStr = result.points > 0 ? `+${result.points} ponto${result.points > 1 ? 's' : ''}` : 'Sem pontos';
+    document.getElementById('round-score-display').textContent =
+      `EQUIPE A: ${this.matchScores[0]} · EQUIPE B: ${this.matchScores[1]}  (${ptStr})`;
+
+    // Locked info
+    const lockedDiv = document.getElementById('locked-info');
+    if (result.type === 'locked') {
+      lockedDiv.classList.remove('hidden');
+      lockedDiv.innerHTML =
+        this.hands.map((h, i) => {
+          const sum = GameRules.handSum(h);
+          return `Jogador ${i+1}: ${sum} pts`;
+        }).join('<br>') +
+        (result.isDraw ? '<br><strong>EMPATE — ninguém pontua</strong>' :
+          `<br><strong>Vence: ${GameRules.TEAM_NAMES[result.teamIdx]} (${result.teamSums[result.teamIdx]} vs ${result.teamSums[1 - result.teamIdx]})</strong>`);
+    } else {
+      lockedDiv.classList.add('hidden');
+    }
+  },
+
+  _showMatchEnd(winnerTeam) {
+    document.getElementById('overlay-round').classList.add('hidden');
+    const overlay = document.getElementById('overlay-match');
+    overlay.classList.remove('hidden');
+
+    const isPlayerTeam = winnerTeam === 0;
+    document.getElementById('match-icon').textContent = isPlayerTeam ? '🏆' : '😔';
+    document.getElementById('match-title').textContent = isPlayerTeam ? 'VITÓRIA!' : 'DERROTA...';
+    document.getElementById('match-title').className = 'overlay-title ' + (isPlayerTeam ? 'good' : 'bad');
+    document.getElementById('match-sub').textContent =
+      `${GameRules.TEAM_NAMES[winnerTeam]} venceu a partida!`;
+    document.getElementById('match-final-score').textContent =
+      `EQUIPE A: ${this.matchScores[0]} · EQUIPE B: ${this.matchScores[1]}`;
+
+    this.phase = 'match-end';
+    this.matchMenuFocus = 0;
+    this._activateMenuList('match-menu', 'matchMenuFocus');
+    SoundEngine.play(isPlayerTeam ? 'win' : 'lose');
+  },
+
+  // ─────────────────────────────────────────────
+  // UI HELPERS
+  // ─────────────────────────────────────────────
+  _updateScoreUI() {
+    ['a', 'b'].forEach((team, idx) => {
+      document.getElementById(`score-num-${team}`).textContent = this.matchScores[idx];
+      const pipsEl = document.getElementById(`pips-${team}`);
+      pipsEl.innerHTML = '';
+      for (let i = 0; i < GameRules.WIN_SCORE; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'score-pip' + (i < this.matchScores[idx] ? (idx === 0 ? ' filled-a' : ' filled-b') : '');
+        pipsEl.appendChild(dot);
+      }
+    });
+  },
+
+  _updateRoundUI() {
+    // Nothing extra for now
+  },
+
+  _setTurnUI(playerName) {
+    document.getElementById('turn-player').textContent = playerName;
+  },
+
+  _setStatus(msg, type) {
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.className = 'status-msg' + (type ? ' ' + type : '');
+  },
+
+  _showPassBadge(player) {
+    const el = document.getElementById(`pass-p${player}`);
+    if (el) el.classList.remove('hidden');
+  },
+
+  _hidePassBadges() {
+    [0, 1, 2, 3].forEach(p => {
+      const el = document.getElementById(`pass-p${p}`);
+      if (el) el.classList.add('hidden');
+    });
+  },
+
+  _showSideChoice(show) {
+    const el = document.getElementById('side-choice');
+    if (show) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  },
+
+  _updateSideBtns() {
+    document.getElementById('side-btn-left').classList.toggle('focused', this.sideChoice === 'left');
+    document.getElementById('side-btn-right').classList.toggle('focused', this.sideChoice === 'right');
+    document.getElementById('side-left-end').textContent = `[${BoardEngine.leftEnd}]`;
+    document.getElementById('side-right-end').textContent = `[${BoardEngine.rightEnd}]`;
+  },
+
+  _showToast(msg, duration = 2000) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => el.classList.add('hidden'), duration);
+  },
+
+  _hideAllOverlays() {
+    document.getElementById('overlay-round').classList.add('hidden');
+    document.getElementById('overlay-match').classList.add('hidden');
+    document.getElementById('toast').classList.add('hidden');
+  },
+
+  _playerName(p) {
+    return ['Jogador 1 (Você)', 'Jogador 2', 'Jogador 3', 'Jogador 4'][p];
+  },
+
+  // ─────────────────────────────────────────────
+  // INPUT HANDLER — the core of 3-key navigation
+  // ─────────────────────────────────────────────
+  handleInput(dir, isEnter) {
+    const screen = this._setCurrentScreen();
+
+    // ── Menu screen ──
+    if (screen === 'menu') {
+      if (dir) this._navList('menu-list', '_menuFocus', 3, dir);
+      if (isEnter) {
+        const items = document.querySelectorAll('#menu-list .menu-item');
+        const action = items[this._menuFocus].dataset.action;
+        if (action === 'play') this.startMatch();
+        else if (action === 'difficulty') {
+          this._diffFocus = ['easy','medium','hard'].indexOf(this.difficulty);
+          if (this._diffFocus < 0) this._diffFocus = 1;
+          this.showScreen('difficulty');
+          this._activateMenuList('diff-list', '_diffFocus');
+          this.phase = 'menu';
+        }
+        else if (action === 'rules') {
+          this.showScreen('rules');
+          this.phase = 'menu';
+        }
+      }
+      return;
+    }
+
+    // ── Difficulty screen ──
+    if (screen === 'difficulty') {
+      if (dir) this._navList('diff-list', '_diffFocus', 4, dir);
+      if (isEnter) {
+        const items = document.querySelectorAll('#diff-list .menu-item');
+        const val = items[this._diffFocus].dataset.val;
+        if (val === 'back') { this.showScreen('menu'); return; }
+        this.difficulty = val;
+        AI.level = val;
+        document.getElementById('diff-label').textContent = { easy:'Fácil', medium:'Médio', hard:'Difícil' }[val];
+        this.showScreen('menu');
+        SoundEngine.play('select');
+      }
+      return;
+    }
+
+    // ── Rules screen ──
+    if (screen === 'rules') {
+      if (isEnter) this.showScreen('menu');
+      return;
+    }
+
+    // ── Who-starts screen ──
+    if (screen === 'who-starts') {
+      if (dir) this._navList('who-list', '_whoFocus', 2, dir);
+      if (isEnter) this._confirmWhoStarts();
+      return;
+    }
+
+    // ── Game screen ──
+    if (screen === 'game') {
+      this._handleGameInput(dir, isEnter);
+    }
+  },
+
+  _handleGameInput(dir, isEnter) {
+    // ── Round result overlay ──
+    if (this.phase === 'round-result' && !document.getElementById('overlay-match').classList.contains('hidden') === false) {
+      // Check if match-end is shown
+      if (!document.getElementById('overlay-round').classList.contains('hidden')) {
+        if (isEnter) {
+          const wt = this.lastWinnerTeam;
+          // Check if match over
+          if (wt !== null && wt >= 0 && this.matchScores[wt] >= GameRules.WIN_SCORE) {
+            return; // handled by match-end
+          }
+          document.getElementById('overlay-round').classList.add('hidden');
+          this.startRound(wt !== null && wt >= 0 ? wt : (this.lastWinnerTeam ?? 0));
+        }
+        return;
+      }
+    }
+
+    // ── Match end overlay ──
+    if (this.phase === 'match-end') {
+      if (dir) this._navList('match-menu', 'matchMenuFocus', 2, dir);
+      if (isEnter) {
+        const items = document.querySelectorAll('#match-menu .menu-item');
+        const action = items[this.matchMenuFocus].dataset.action;
+        document.getElementById('overlay-match').classList.add('hidden');
+        if (action === 'newgame') this.startMatch();
+        else this.showScreen('menu');
+      }
+      return;
+    }
+
+    // ── AI thinking — ignore input ──
+    if (this.phase === 'ai-thinking') return;
+
+    // ── Pass confirm ──
+    if (this.phase === 'pass-confirm') {
+      if (isEnter) {
+        this._setStatus('Você passou a vez.', 'warn');
+        this._showPassBadge(0);
+        SoundEngine.play('pass');
+        this._showToast('Você passou', 1200);
+        this.passCount++;
+        this.phase = 'idle';
+        setTimeout(() => this._checkAndAdvanceTurn(), 1000);
+      }
+      return;
+    }
+
+    // ── Select side ──
+    if (this.phase === 'select-side') {
+      if (dir) {
+        this.sideChoice = this.sideChoice === 'left' ? 'right' : 'left';
+        this._updateSideBtns();
+        SoundEngine.play('nav');
+      }
+      if (isEnter) {
+        // Place tile on chosen side
+        const tileIdx = this.selectedTileIdx;
+        const tile = this.hands[0][tileIdx];
+        AI.recordPlay(tile);
+        this._doPlaceTile(0, tileIdx, this.sideChoice);
+        this.forcedOpenTile = null;
+        this.passCount = 0;
+        this.selectedTileIdx = -1;
+        this._showSideChoice(false);
+        SoundEngine.play('place');
+
+        if (this.hands[0].length === 0) {
+          this._handleWin(0);
+          return;
+        }
+        this.phase = 'idle';
+        this._checkAndAdvanceTurn();
+      }
+      return;
+    }
+
+    // ── Select tile ──
+    if (this.phase === 'select-tile') {
+      const hand = this.hands[0];
+      if (!hand.length) return;
+
+      if (dir) {
+        this.handFocusIdx = ((this.handFocusIdx + dir) % hand.length + hand.length) % hand.length;
+        SoundEngine.play('nav');
+        this._renderHumanHand();
+        return;
+      }
+
+      if (isEnter) {
+        const playable = BoardEngine.getPlayable(hand);
+
+        // First round forced tile check
+        if (this.forcedOpenTile && BoardEngine.isEmpty) {
+          const tile = hand[this.handFocusIdx];
+          if (!(tile.a === this.forcedOpenTile.a && tile.b === this.forcedOpenTile.b)) {
+            SoundEngine.play('error');
+            this._setStatus(`Você deve jogar o ${this.forcedOpenTile.a}-${this.forcedOpenTile.b} obrigatoriamente!`, 'warn');
+            return;
+          }
+        }
+
+        if (!playable.includes(this.handFocusIdx)) {
+          SoundEngine.play('error');
+          this._setStatus('Esta peça não pode ser jogada agora!', 'warn');
+          return;
+        }
+
+        const tile = hand[this.handFocusIdx];
+        SoundEngine.play('select');
+        this.selectedTileIdx = this.handFocusIdx;
+
+        // Check if tile can play on both sides
+        if (!BoardEngine.isEmpty) {
+          const canLeft = BoardEngine.canPlayOnSide(tile, 'left');
+          const canRight = BoardEngine.canPlayOnSide(tile, 'right');
+
+          if (canLeft && canRight) {
+            // Need to choose side — tile fits both ends
+            this.phase = 'select-side';
+            this.sideChoice = 'right';
+            this._showSideChoice(true);
+            this._updateSideBtns();
+            this._setStatus(`${tile.a}|${tile.b} encaixa nos dois lados — escolha onde jogar.`, 'active');
+            this._renderHumanHand();
+            return;
+          }
+
+          // Only one side valid
+          const side = canLeft ? 'left' : 'right';
+          AI.recordPlay(tile);
+          this._doPlaceTile(0, this.handFocusIdx, side);
+          this.forcedOpenTile = null;
+          this.passCount = 0;
+          this.selectedTileIdx = -1;
+          SoundEngine.play('place');
+
+          if (this.hands[0].length === 0) {
+            this._handleWin(0);
+            return;
+          }
+          this._checkAndAdvanceTurn();
+
+        } else {
+          // Board empty — place right (first tile)
+          AI.recordPlay(tile);
+          this._doPlaceTile(0, this.handFocusIdx, 'right');
+          this.forcedOpenTile = null;
+          this.passCount = 0;
+          this.selectedTileIdx = -1;
+          SoundEngine.play('place');
+
+          if (this.hands[0].length === 0) {
+            this._handleWin(0);
+            return;
+          }
+          this._checkAndAdvanceTurn();
+        }
+      }
+    }
+  },
+};
+
+// ─────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  GameController.init();
+});
+
+// Handle window resize: refit board
+window.addEventListener('resize', () => {
+  if (!BoardEngine.isEmpty) {
+    BoardRenderer.fitView();
+  }
+});
+</script>
+</body>
+</html>
