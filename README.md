@@ -8,7 +8,7 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![JavaScript](https://img.shields.io/badge/logo-javascript-blue?logo=javascript&logoColor=f5f5f5)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![C](https://img.shields.io/badge/c-%2300599C.svg?style=for-the-badge&logo=c&logoColor=white)
 ![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
 ![**Projeto Acadêmico**](https://img.shields.io/badge/📚-Projeto%20Acadêmico-success?style=for-the-badge)
@@ -42,9 +42,6 @@ O desenvolvimento do projeto é estruturado da seguinte forma:
 **Backend e Hardware:**
 * **Python com Flask e C:** Utilizados no desenvolvimento da lógica do sistema, integração com o Arduino, processamento de dados e comunicação entre os sensores de movimento e a interface do jogo.
 * **Arduino:** Plataforma de hardware utilizada para captar as inclinações e comandos físicos do usuário.
-
-**Comunicação de Dados:**
-* **JSON:** Formato utilizado como "idioma" de comunicação entre o Backend (Python/Flask) e o Frontend (JavaScript). É através do JSON que o movimento físico lido pelo Arduino é enviado e compreendido pelo jogo na tela.
 ---
 
 ## ✨ Funcionalidades do Jogo
