@@ -1,1 +1,0 @@
-codigo python pega as informações do codigo c++ e roda com as bibliotecas pyautogui e pyserial
