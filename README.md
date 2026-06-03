@@ -1,9 +1,6 @@
 <div align="center">
- <!-- <img width="300" alt="logo" src="https://via.placeholder.com/300x150?text=DomiNod" /> -->
-
-  # DomiNod
-
-  <br />
+  <img width="280" alt="Logo DomiNod" src="https://github.com/user-attachments/assets/98ddacaf-9b10-4c41-89f2-c07725c8ecf9"/>
+  <h1>DomiNod</h1>
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
@@ -14,7 +11,6 @@
 ![**Projeto Acadêmico**](https://img.shields.io/badge/📚-Projeto%20Acadêmico-success?style=for-the-badge)
 
 ---
-
 </div>
 
 
