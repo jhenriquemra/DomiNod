@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+/* ================================================================
+   DOMINOD - LAYOUT MODERNO (OPEN SAUCE/INTER) + CORREÇÃO DE BUGS 
+   ================================================================ */
+
+:root {
+  --bg:         #ffffff;
+  --text:       #000000;
+  --border:     #000000;
+  --gray:       #666666;
+  --light-gray: #f4f4f4;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Open Sans', sans-serif !important;
+}
+
+html, body {
+  width: 100%;
+  height: 100dvh; /* Evita que o fundo do navegador corte o jogo */
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── CORREÇÃO DOS TEXTOS DE STATUS (BALÕES FLUTUANTES) ── */
+#p2-area, #p3-area, #p4-area {
+  position: relative; /* Necessário para o balão se guiar por eles */
+}
+
+.ai-status {
+  position: absolute;
+  background: var(--text); /* Fundo escuro para dar contraste */
+  color: var(--bg); /* Texto claro */
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap; /* Impede o texto de quebrar de linha */
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Oculta completamente a caixa se não houver texto */
+.ai-status:empty {
+  display: none;
+}
+
+/* P2 (Esquerda) - joga o balão para a direita da mão dele */
+#st2 {
+  left: 90px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* P4 (Direita) - joga o balão para a esquerda da mão dele */
+#st4 {
+  right: 90px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* P3 (Topo/Parceiro) - joga o balão para baixo da mão dele */
+#st3 {
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── INDICADOR DE TURNO BOUNCING ── */
+@keyframes bounceTurn {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Cria a bolinha quicando antes do nome do jogador ativo */
+.your-turn::before,
+.active-turn::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: var(--border); /* Usa a cor escura do tema */
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+  animation: bounceTurn 0.5s ease-in-out infinite; /* Animação infinita */
+}
+
+/* Destaca levemente a caixa do jogador atual */
+.your-turn, .active-turn {
+  color: var(--text);
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+/* Deixa os jogadores que estão esperando um pouco mais apagados */
+.not-turn, .ai-label:not(.active-turn) {
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+  
+/* ── REDESIGN DO MENU (MAIS SUAVE E MODERNO) ── */
+#menu-box, #rules-box {
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Borda quase invisível apenas para dar acabamento */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); /* Sombra difusa e elegante */
+  border-radius: 24px; /* Cantos mais arredondados e amigáveis */
+  background: var(--bg);
+}
+
+.menu-btn {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--light-gray);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  transform: translateY(0);
+  transition: all 0.3s ease; /* Transição mais fluida */
+}
+
+.menu-btn.active, .menu-btn:hover {
+  background: var(--text); /* Fica preto ao selecionar */
+  color: var(--bg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra aumenta para destacar */
+  transform: translateY(-3px); /* Botão levanta levemente */
+}
+
+/* Suavizando também as teclas de dica no rodapé */
+kbd {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 0 #ccc;
+  background: #fff;
+}
+
+/* ── CORREÇÃO DA MÃO DO JOGADOR 3 (HORIZONTAL) ── */
+#hand-p3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 6px;
+}
+
+#hand-p3 .piece.back {
+  width: 48px;
+  height: 26px;
+  min-width: 48px;
+  min-height: 26px;
+}
+
+/* ── TELAS GERAIS E MENUS ── */
+.screen {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  background: var(--bg); z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.screen.off { display: none !important; }
+
+#menu-box, #rules-box {
+  width: 90%; max-width: 500px; max-height: 90vh;
+  background: var(--bg); border: 3px solid var(--border); border-radius: 12px;
+  padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+  box-shadow: 0 8px 0 rgba(0,0,0,1); overflow-y: auto;
+}
+#menu-logo-img { width: 160px; height: 160px; object-fit: contain; border: none; }
+#menu-title { font-size: 2.8rem; font-weight: 900; color: var(--text); text-align: center; line-height: 1; }
+#menu-title span { color: var(--text) !important; }
+#menu-sub { font-weight: 600; color: var(--gray); font-style: italic; text-align: center; }
+
+.menu-btns { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+.menu-btn {
+  width: 100%; padding: 15px; border: 2px solid var(--border); border-radius: 8px;
+  background: var(--bg); font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.2s;
+}
+.menu-btn.active, .menu-btn:hover { background: var(--border); color: var(--bg); }
+
+/* ── LAYOUT DO JOGO (FLEXÍVEL E RESPONSIVO) ── */
+#app {
+  display: flex; flex-direction: column; width: 100%; height: 100%;
+}
+
+/* Placar (Topo) */
+#top {
+  height: 70px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; border-bottom: 3px solid var(--border); background: var(--bg); z-index: 10;
+}
+.score-side { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; }
+.sdot { width: 12px; height: 12px; background: var(--border); border-radius: 50%; }
+.sdot.empty { background: transparent; border: 2px solid var(--border); }
+#game-title { font-weight: 900; letter-spacing: 2px; }
+#turn-text { font-weight: 600; color: var(--gray); font-size: 0.85rem; }
+
+/* Mesa do Jogo */
+#play-area {
+  flex: 1; /* Ocupa todo o espaço restante sem cortar */
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  grid-template-rows: 80px 1fr;
+  position: relative; overflow: hidden; background: var(--light-gray);
+}
+#p3-area { grid-column: 1 / 4; grid-row: 1; display: flex; justify-content: center; align-items: center; gap: 6px; border-bottom: 2px solid #ddd; }
+#p2-area { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; border-right: 2px solid #ddd; }
+#p4-area { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; border-left: 2px solid #ddd; }
+
+#board-vp { grid-column: 2; grid-row: 2; position: relative; overflow: hidden; background: var(--bg); }
+#board-cv { position: absolute; top: 0; left: 0; transform-origin: 0 0; transition: transform 0.3s ease; }
+
+/* Barra do Jogador (Mão) */
+#player-bar {
+  min-height: 120px; flex-shrink: 0; border-top: 3px solid var(--border); background: var(--bg);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 15px; gap: 10px; z-index: 10;
+}
+#hand-p1 { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 8px; min-height: 90px; }
+
+/* ── FORÇA A CORREÇÃO DE SOBREPOSIÇÃO DOS BOTS ── */
+#p2-area .piece, #p3-area .piece, #p4-area .piece {
+  position: relative !important; left: auto !important; top: auto !important;
+  right: auto !important; bottom: auto !important; transform: none !important; margin: 0 !important;
+}
+.ai-label { font-weight: 800; font-size: 0.75rem; color: var(--border); text-align: center; }
+#ends-hud { position: absolute; top: 10px; right: 10px; background: var(--bg); border: 2px solid var(--border); padding: 5px 10px; border-radius: 8px; font-weight: 800; z-index: 20; box-shadow: 0 4px 0 var(--border); }
+
+/* ── ESTILO DAS PEÇAS (BLACK & WHITE MODERNAS) ── */
+.piece {
+  position: relative; display: flex; flex-direction: column; width: 44px; height: 88px;
+  background: var(--bg); border: 2px solid var(--border); border-radius: 6px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,1); flex-shrink: 0;
+}
+.piece::after { content: ''; position: absolute; top: 50%; left: 5px; right: 5px; height: 2px; background: var(--border); margin-top: -1px; }
+.piece.h { flex-direction: row; width: 88px; height: 44px; }
+.piece.h::after { top: 5px; bottom: 5px; left: 50%; width: 2px; height: auto; margin-top: 0; margin-left: -1px; }
+
+.half { flex: 1; display: flex; justify-content: center; align-items: center; }
+.pip-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 4px; }
+.pip { width: 8px; height: 8px; background: var(--border); border-radius: 50%; justify-self: center; align-self: center; }
+.pip.off { visibility: hidden; }
+
+/* Efeitos das peças na mesa e na mão */
+.piece.sel { transform: translateY(-15px) scale(1.1); border-width: 3px; box-shadow: 0 8px 0 rgba(0,0,0,1); }
+.piece.inv { opacity: 0.3; filter: grayscale(1); }
+.piece.back { background: var(--light-gray); border-color: var(--gray); width: 26px; height: 48px; min-width: 26px; min-height: 48px; box-shadow: 1px 1px 0 rgba(0,0,0,0.5); }
+.piece.back::after { display: none; }
+.bp { position: absolute; transition: 0.3s; }
+
+/* ── CAIXAS DE MENSAGEM (OVERLAYS E TOASTS) ── */
+#overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+#overlay.off { display: none; }
+#ov-box { background: var(--bg); border: 3px solid var(--border); padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 8px 0 var(--border); }
+#ov-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 15px; }
+.ov-opt { display: inline-block; padding: 10px 20px; border: 2px solid var(--border); border-radius: 6px; margin: 5px; font-weight: 800; cursor: pointer; }
+.ov-opt.active, .ov-opt:hover { background: var(--border); color: var(--bg); }
+
+#starter-banner { position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: var(--bg); border: 3px solid var(--border); padding: 20px; border-radius: 12px; text-align: center; z-index: 80; box-shadow: 0 8px 0 var(--border); }
+#starter-banner.off { display: none; }
+.sb-opt { display: inline-block; padding: 8px 16px; border: 2px solid var(--border); margin: 5px; border-radius: 6px; font-weight: 800; cursor: pointer; }
+.sb-opt.active, .sb-opt:hover { background: var(--border); color: var(--bg); }
+
+#toast { position: fixed; top: 170px; left: 50%; transform: translateX(-50%); background: var(--bg); border: 3px solid var(--border); padding: 10px 20px; border-radius: 8px; opacity: 0; font-weight: 900; z-index: 50; transition: opacity 0.3s; box-shadow: 0 4px 0 var(--border); }
+#toast.show { opacity: 1; }
+kbd { font-family: monospace; font-weight: 800; border: 2px solid var(--border); padding: 2px 6px; border-radius: 4px; background: var(--light-gray); }

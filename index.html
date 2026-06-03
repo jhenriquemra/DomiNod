@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DomiNod</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="screen-menu" class="screen">
+    <div id="menu-felt"></div>
+    <div id="menu-box">
+      <img id="menu-logo-img" src="assets/logo_dominod.png" alt="Logo DomiNod">
+      <div>
+        <div id="menu-title">DomiNod<span style="color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.6)"></span></div>
+        <div id="menu-sub"></div>
+      </div>
+      <div class="menu-btns" id="menu-btns">
+        <div class="menu-btn active" data-action="play">▶ &nbsp;Jogar</div>
+        <div class="menu-btn" data-action="rules">☰ &nbsp;Regras</div>
+      </div>
+      <div id="menu-hint"><kbd>←</kbd><kbd>→</kbd> Navegar &nbsp;<kbd>Enter</kbd> Selecionar</div>
+    </div>
+  </div>
+
+  <div id="screen-rules" class="screen off">
+    <div id="rules-box">
+      <div id="rules-header">
+        <div id="rules-title">Regras do DomiNod</div>
+        <div id="rules-pager">1 / 3</div>
+      </div>
+      <div id="rules-content">
+        </div>
+      <div id="rules-nav">
+        <div class="rules-nav-btn dim" id="rules-prev">← Anterior</div>
+        <div id="rules-nav-hint"><kbd>←</kbd> <kbd>→</kbd> &nbsp; <kbd>Enter</kbd> Sair</div>
+        <div class="rules-nav-btn" id="rules-next">Próxima →</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app">
+    <div id="top">
+      <div class="score-side" id="score-a">
+        <span class="team-name">Equipe A <span class="team-tag ta">▲</span></span>
+        <div class="score-dots" id="dots-a"></div>
+        <span class="score-num" id="num-a">0</span>
+      </div>
+      <div id="title-center">
+        <div id="game-title">DOMINOD</div>
+        <div id="turn-text">Iniciando…</div>
+      </div>
+      <div class="score-side" id="score-b">
+        <span class="score-num" id="num-b">0</span>
+        <div class="score-dots" id="dots-b"></div>
+        <span class="team-name"><span class="team-tag tb">▲</span> Equipe B</span>
+      </div>
+    </div>
+
+    <div id="play-area">
+
+      <div id="p3-area">
+        <div id="lbl-p3" class="ai-label partner">Jogador 3 <span class="team-tag ta">Equipe A</span> <span class="player-role ta">✦ Parceiro</span></div>
+        <div class="ai-hand-h" id="hand-p3"></div>
+        <div class="ai-status" id="st3"></div>
+      </div>
+
+      <div id="p2-area">
+        <div id="lbl-p2" class="ai-label enemy">Jogador 2<br><span class="team-tag tb">Eq B</span><br><span class="player-role tb">Adversário</span></div>
+        <div class="ai-hand-v" id="hand-p2"></div>
+        <div class="ai-status" id="st2"></div>
+      </div>
+
+      <div id="board-vp">
+        <div id="board-cv"></div>
+        <div id="ends-hud">
+          <span>ESQ:</span><span class="end-val" id="end-left">—</span>
+          <span>|</span>
+          <span>DIR:</span><span class="end-val" id="end-right">—</span>
+        </div>
+      </div>
+
+      <div id="p4-area">
+        <div id="lbl-p4" class="ai-label enemy">Jogador 4<br><span class="team-tag tb">Eq B</span><br><span class="player-role tb">Adversário</span></div>
+        <div class="ai-hand-v" id="hand-p4"></div>
+        <div class="ai-status" id="st4"></div>
+      </div>
+
+    </div>
+
+    <div id="player-bar">
+      <div id="p1-label">Sua Mão — Jogador 1 <span class="team-tag ta">(Equipe A · Parceiro: J3)</span></div>
+      <div id="hand-p1"></div>
+      <div id="ctrl-hint"><kbd>←</kbd><kbd>→</kbd> Selecionar &nbsp; <kbd>Enter</kbd> Jogar</div>
+    </div>
+  </div>
+
+  <div id="overlay" class="off">
+    <div id="ov-box">
+      <div id="ov-title"></div>
+      <div id="ov-body"></div>
+      <div id="ov-opts"></div>
+      <div id="ov-hint"></div>
+    </div>
+  </div>
+
+  <div id="starter-banner" class="off">
+    <div id="starter-banner-title"></div>
+    <div id="starter-banner-body"></div>
+    <div id="starter-banner-opts"></div>
+    <div id="starter-banner-hint"><kbd>←</kbd><kbd>→</kbd> Escolher &nbsp; <kbd>Enter</kbd> Confirmar</div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="js/script.js"></script>
+
+</body>
+</html>
