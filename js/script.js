@@ -41,7 +41,7 @@ let G = {};
 // MENU
 // ================================================================
 let menuSel = 0;
-const menuActions = ['play', 'rules'];
+const menuActions = ['play', 'rules', 'about'];
 
 function initMenu() {
   menuSel = 0;
@@ -66,10 +66,14 @@ function execMenuAction(action) {
   if (action === 'play') {
     document.getElementById('screen-menu').classList.add('off');
     startNewGame();
+
   } else if (action === 'rules') {
     document.getElementById('screen-menu').classList.add('off');
     document.getElementById('screen-rules').classList.remove('off');
     G.phase = 'rules';
+
+  } else if (action === 'about') {
+    openAbout();
   }
 }
 
@@ -572,28 +576,55 @@ function hideOverlay() {
 // TECLADO
 // ================================================================
 document.addEventListener('keydown', e => {
-  if (!['ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) return;
+  if (!['ArrowLeft', 'ArrowRight', 'Enter', 'Escape'].includes(e.key)) return;
   e.preventDefault();
   const k = e.key;
 
-  if (G.phase === 'menu') { menuKey(k); return; }
+  if (G.phase === 'menu') { 
+    menuKey(k); 
+    return; 
+  }
+
   if (G.phase === 'rules') {
     const isLast = _rulesPage === RULES_PAGES.length - 1;
+
     if (k === 'ArrowRight' || k === 'Enter') {
-      if (isLast) { hideRules(); }
-      else        { _rulesPage++; renderRulesPage(); }
+      if (isLast) { 
+        hideRules(); 
+      } else { 
+        _rulesPage++; 
+        renderRulesPage(); 
+      }
     }
+
     if (k === 'ArrowLeft') {
-      if (_rulesPage > 0) { _rulesPage--; renderRulesPage(); }
-      else                { hideRules(); }
+      if (_rulesPage > 0) { 
+        _rulesPage--; 
+        renderRulesPage(); 
+      } else { 
+        hideRules(); 
+      }
+    }
+
+    return;
+  }
+
+  if (G.phase === 'about') {
+    if (k === 'Enter' || k === 'Escape') {
+      closeAbout();
     }
     return;
   }
-  if (G.phase === 'overlay')          { handleOvKey(k);      return; }
-  if (G.phase === 'starter-banner')   { handleSBKey(k);      return; }
-  if (G.phase === 'choose-side')      { handleSideKey(k);    return; }
-  if (G.phase === 'ai-turn')     return;
-  if (G.phase === 'idle' && G.current === 0) { handlePlayerKey(k); return; }
+
+  if (G.phase === 'overlay')        { handleOvKey(k);   return; }
+  if (G.phase === 'starter-banner') { handleSBKey(k);   return; }
+  if (G.phase === 'choose-side')    { handleSideKey(k); return; }
+  if (G.phase === 'ai-turn')        return;
+
+  if (G.phase === 'idle' && G.current === 0) { 
+    handlePlayerKey(k); 
+    return; 
+  }
 });
 
 function handleOvKey(k) {
@@ -1127,13 +1158,42 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Navegação das regras (click também funciona)
+  // Navegação das regras
   document.getElementById('rules-prev').addEventListener('click', () => {
-    if (_rulesPage > 0) { _rulesPage--; renderRulesPage(); }
-    else                { hideRules(); }
+    if (_rulesPage > 0) { 
+      _rulesPage--; 
+      renderRulesPage(); 
+    } else { 
+      hideRules(); 
+    }
   });
+
   document.getElementById('rules-next').addEventListener('click', () => {
-    if (_rulesPage < RULES_PAGES.length - 1) { _rulesPage++; renderRulesPage(); }
-    else                                      { hideRules(); }
+    if (_rulesPage < RULES_PAGES.length - 1) { 
+      _rulesPage++; 
+      renderRulesPage(); 
+    } else { 
+      hideRules(); 
+    }
   });
+
+  // Botão de voltar da tela Sobre
+  const aboutClose = document.getElementById('about-close');
+
+  if (aboutClose) {
+    aboutClose.addEventListener('click', closeAbout);
+  }
 });
+
+function openAbout() {
+  document.getElementById('screen-menu').classList.add('off');
+  document.getElementById('screen-about').classList.remove('off');
+  G.phase = 'about';
+}
+
+function closeAbout() {
+  document.getElementById('screen-about').classList.add('off');
+  document.getElementById('screen-menu').classList.remove('off');
+  G.phase = 'menu';
+  initMenu();
+}

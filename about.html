@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  /* Container do cenário 3D */
+  .scene {
+    width: 280px;
+    height: 380px;
+    perspective: 1200px;
+    margin-bottom: 60px;
+  }
+
+  /* Nova "Câmera" que controla o zoom e a inclinação */
+  .camera {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Posição da câmera quando está ocioso (Idle) */
+  .camera.idle {
+    /* Recua para trás, sobe um pouco e inclina olhando para baixo */
+    transform: translateZ(-350px) translateY(50px) rotateX(-15deg);
+  }
+
+  /* O carrossel que vai girar */
+  .carousel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    /* Transição suave para cliques (removida dinamicamente durante o giro automático) */
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Estrutura base de cada cartão */
+  .card {
+    position: absolute;
+    width: 280px;
+    height: 380px;
+    left: 0;
+    top: 0;
+    transform-style: preserve-3d;
+  }
+
+  /* Espaçamento em círculo (360 graus / 9 cartões = 40 graus) */
+  .card:nth-child(1) { transform: rotateY(0deg) translateZ(420px); }
+  .card:nth-child(2) { transform: rotateY(40deg) translateZ(420px); }
+  .card:nth-child(3) { transform: rotateY(80deg) translateZ(420px); }
+  .card:nth-child(4) { transform: rotateY(120deg) translateZ(420px); }
+  .card:nth-child(5) { transform: rotateY(160deg) translateZ(420px); }
+  .card:nth-child(6) { transform: rotateY(200deg) translateZ(420px); }
+  .card:nth-child(7) { transform: rotateY(240deg) translateZ(420px); }
+  .card:nth-child(8) { transform: rotateY(280deg) translateZ(420px); }
+  .card:nth-child(9) { transform: rotateY(320deg) translateZ(420px); }
+
+  /* Faces do cartão (Frente e Trás) */
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* --- Design da Frente (Perfil) --- */
+  .card-front {
+    background: white;
+    border-top: 6px solid #000000;
+    padding: 30px 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profile-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #000000;
+  }
+
+  .name {
+    margin: 0 0 8px;
+    color: #000000;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .course {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.08);
+    color: #000000;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 5px 15px;
+    border-radius: 50px;
+    margin: 5px 0 15px;
+  }
+
+  .email {
+    font-size: 0.9rem;
+    color: #555555;
+    word-break: break-all;
+    font-weight: 400;
+  }
+
+  /* --- Design de Trás (Peça de Dominó Real) --- */
+  .card-back {
+    transform: rotateY(180deg);
+    background-color: white;
+    border: 8px solid #000000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .half {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    padding: 25px;
+    box-sizing: border-box;
+  }
+
+  /* Linha divisória com bolinha preta central */
+  .divider {
+    width: 100%;
+    height: 6px;
+    background-color: #000000;
+    position: relative;
+  }
+
+  .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #888888;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .dot {
+    background-color: #000000;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    margin: auto;
+  }
+
+  .d-tl { grid-column: 1; grid-row: 1; }
+  .d-tr { grid-column: 3; grid-row: 1; }
+  .d-c  { grid-column: 2; grid-row: 2; }
+  .d-ml { grid-column: 1; grid-row: 2; }
+  .d-mr { grid-column: 3; grid-row: 2; }
+  .d-bl { grid-column: 1; grid-row: 3; }
+  .d-br { grid-column: 3; grid-row: 3; }
+
+  /* --- Controles (Botões) --- */
+  .controls {
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+  }
+
+  .btn {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    font-family: 'Lato', sans-serif;
+  }
+
+  .btn:hover {
+    background-color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="camera" id="camera">
+    <div class="carousel" id="carousel">
+      
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7qcefN-0R4SxnIc47ijHANMYmRtU1etF5LpOE9I0AWyEevx3-HqZ1e9-sDhCne-Dzl-QMMVqjR00zGKZG-w-09YQLYOQVpb-4OPV-zIbgrPU4CIQJ6JK7fNV-O5W7wMkeME5fQYACqZRaW2biB5EmY1OGqeUEW256fTH1DeZdIkBFSbcwpn?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Felipe">
+          <div class="name">Felipe Assis Ferreira dos Santos</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">fafs@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-c"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-c"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7rF6eYccVRVq2yLnCSz_nPifp6RZCTskmcOdqRP1sb8zrNEehC9HkRP1jD7CsYcHIVGKT6zcycPJrR_uY_lr9-6S5cOtHwJPmzcRW-nmnPJSlPwaqn67546QJeZHQ0PgjsI-lncilXPr75bUYRbkDPEPAksXousCdd9WQDK-TER4bqW1Hw?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="João">
+          <div class="name">João Henrique Azevedo</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">jhmra@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7rS6JBxu3Fy1Age2I8uAh89iv0SzzYe9yJU1j1ILqksGfdEwdVUjmCiVlfGDlrA4LZIKx38B1w59NpVGd2fjtL9Ra0RqMa7Z-Ud535CmEDRpP9PuBbRmTqEB5_iG5rQSi8_m6HFJd_7NOb5O61xv-c8VDE3VNrL0wqM7DCPszCW-qVdXsQv?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Júlia">
+          <div class="name">Júlia Farias Amancio</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">jfa@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-c"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-c"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7ruwWe9lIiRVpbM5bn2Pm3PM1rHziWCqsUTakUKy46T-GXTKaZ3JS2Xdxk1UeZHBnnMM5k0yX6Zrk_aIZZWsSuiRsVqmW1wCQjLy1XDTidIzt8wJI7YTt0yxOGVYgQ9rHEuMAh8Oib83zrOg01402YV5VWqGj5pCUiYsDkUjT-z2TLUn4eT?key=Qy1IiKbzU3Qkm9_Z0u9Fcw1" alt="Luiz">
+          <div class="name">Luiz Henrique de Andrade Rodrigues</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">lhar@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7own_vgoIYdra4Re1XGwthdzP18sDENCjm06W5diHll-1W8p01-Jy4A_W52zfKt52yYXbkis1y09G_icTnb98L-GWjvpsCygudm-d-I1ePHINJAcDEI1n4UMgx4M28X4VZb3LQfwl3MnFhvYpwDHqGEKVQDmO74T0bcZXjcqVS6BLQ28dQ6?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Nara">
+          <div class="name">Nara de Melo Santos</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">nms2@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-c"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-c"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7r6Pr-0KGklwrGzODJ4EBdCM7D56EFeoYUVMz9A_WHg859BPxVu8ma7AFZhIobocVaUjtV48bLk-z5QLgR0ZVDJTsQpG8-utYKaV_3fbJxTg6m2xRO3v_nfjIXmTH3zD-bqo_N5VQixku0QasWuxxDbWj0QdbiJ_zH-VQwjsWfCKhqAeHLB?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Pedro">
+          <div class="name">Pedro Correia Antunes</div>
+          <div class="course">Ciência da Computação</div>
+          <div class="email">pca2@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-ml"></div><div class="dot d-bl"></div><div class="dot d-tr"></div><div class="dot d-mr"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-ml"></div><div class="dot d-bl"></div><div class="dot d-tr"></div><div class="dot d-mr"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7pCSlBuzQoSGWFr7ihpfHn8sjsuqZN8GKVFJlzbNv2sMYr0ao3dDXLzbboXDQXDWQIC37Tocqbs1rQRGorN28KrP6f_so0q8AOXKSftqat5BlkAgnU5EQB-LJXTvCcptT8BGKJXZ-tcwH429MKJyFQfzhOjVe92KYC3xBaoMAI6HazVnuoG?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Sofia">
+          <div class="name">Sofia Albuquerque Feitosa</div>
+          <div class="course">Design</div>
+          <div class="email">saf@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-ml"></div><div class="dot d-bl"></div><div class="dot d-tr"></div><div class="dot d-mr"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7rH8gG0YhCZzK5QWDZMBOyot6iU37aMCl3V5rWx6CHFsKthfWTEqQdkZ4AOfnQnGSj4iRKdOmzOvpVuW5gHMIybaYcwBRKkXULabuyU04qkNPjfNKTX1gTogMU8WhMNrIa0Zyyh6Newi_Dx48slhVLsem1BL_9PdS3OmrwHHzcE2WetaB0?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Thácio">
+          <div class="name">Thácio Soares Miranda dos Santos</div>
+          <div class="course">Design</div>
+          <div class="email">tsms2@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-c"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-face card-front">
+          <img class="profile-img" src="https://lh7-rt.googleusercontent.com/sitesz/AClOY7q3KLzkYA_Adz1fZnEIOhZV7FSvNsnttV7xe2guhrWAeBRA8O5eNTOMA4yaKvoPJjiED1EMF0ZM01nOTRrNvA8OmFtdxIOPFrhj-UoGJhXBkaFa_9WFIbEdAKf05sUCd5JPsy4JcCClhTb-OSJC-spgX0OjGBbqOQkb8VBg46eFb2HlLu4w?key=Qy1IiKbzU3Qkm9_Z0u9Fcw" alt="Thamires">
+          <div class="name">Thamires Gestosa Vieira</div>
+          <div class="course">Design</div>
+          <div class="email">tgv@cesar.school</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-c"></div><div class="dot d-br"></div></div>
+          <div class="divider"></div>
+          <div class="half"><div class="dot d-tl"></div><div class="dot d-tr"></div><div class="dot d-bl"></div><div class="dot d-br"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="btnVoltar">Voltar</button>
+  <button class="btn" id="btnPassar">Próximo</button>
+</div>
+
+<script>
+  const carousel = document.getElementById('carousel');
+  const camera = document.getElementById('camera');
+  const btnPassar = document.getElementById('btnPassar');
+  const btnVoltar = document.getElementById('btnVoltar');
+
+  let anguloAtual = 0;
+  const grausPorCard = 40; // 360 / 9 integrantes
+
+  // Variáveis do sistema de Idle (Inatividade)
+  let idleTimer;
+  let isIdle = false;
+  let animationFrameId;
+  const velocidadeRotacao = 0.15; // Velocidade bem lenta e elegante
+
+  // Função que faz o carrossel girar sozinho sem travar (60fps)
+  function animacaoGiroAuto() {
+    if (isIdle) {
+      anguloAtual -= velocidadeRotacao;
+      carousel.style.transform = `rotateY(${anguloAtual}deg)`;
+      animationFrameId = requestAnimationFrame(animacaoGiroAuto);
+    }
+  }
+
+  // Aciona o modo ocioso
+  function ativarIdle() {
+    isIdle = true;
+    camera.classList.add('idle'); // Sobe a câmera
+    carousel.style.transition = 'none'; // Desliga a transição CSS para o JS girar suave
+    animacaoGiroAuto();
+  }
+
+  // Função para arredondar e encaixar perfeitamente no card mais próximo
+  function alinharAoCardMaisProximo() {
+    return Math.round(anguloAtual / grausPorCard) * grausPorCard;
+  }
+
+  // Interrompe o ocioso quando houver interação
+  function resetarInteracao() {
+    if (isIdle) {
+      isIdle = false;
+      camera.classList.remove('idle'); // Desce a câmera
+      cancelAnimationFrame(animationFrameId); // Para o giro automático
+      
+      // Religa a transição CSS suave
+      carousel.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+      
+      // Encaixa no card que parou mais perto
+      anguloAtual = alinharAoCardMaisProximo();
+      carousel.style.transform = `rotateY(${anguloAtual}deg)`;
+    }
+
+    // Zera o cronômetro para contar 3 segundos de novo
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(ativarIdle, 3000);
+  }
+
+  // Eventos de interação (qualquer clique ou movimento no site reseta o timer)
+  document.addEventListener('click', resetarInteracao);
+  document.addEventListener('mousemove', resetarInteracao);
+  document.addEventListener('touchstart', resetarInteracao);
+
+  // Botões
+  btnPassar.addEventListener('click', (e) => {
+    e.stopPropagation(); 
+    resetarInteracao();
+    anguloAtual -= grausPorCard;
+    carousel.style.transform = `rotateY(${anguloAtual}deg)`;
+  });
+
+  btnVoltar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetarInteracao();
+    anguloAtual += grausPorCard;
+    carousel.style.transform = `rotateY(${anguloAtual}deg)`;
+  });
+
+  // Inicia o contador ao carregar a página
+  idleTimer = setTimeout(ativarIdle, 3000);
+
+</script>
+
+</body>
+</html>
