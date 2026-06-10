@@ -45,3 +45,34 @@ O desenvolvimento do projeto é estruturado da seguinte forma:
 * Interface gráfica adaptada para navegação linear e simplificada.
 * Integração direta entre o hardware dos sensores e a resposta visual na tela.
 * Regras e lógica do jogo clássico de dominó adaptadas ao sistema de acessibilidade.
+
+---
+
+## 📁 Estrutura do Projeto
+
+Abaixo está a organização atual dos arquivos e diretórios do projeto:
+
+```text
+DomiNod/
+│
+├── assets/                  # Imagens, ícones e recursos visuais
+│   ├── favicon.ico
+│   └── logo_dominod.png
+│
+├── css/                     # Arquivos de folha de estilo
+│   └── style.css
+│
+├── js/                      # Scripts do lado do cliente (Front-end)
+│   └── script.js
+│
+├── teste uno/               # Integração Arduino e scripts de controle
+│   ├── controle.py          # Script em Python para controle/comunicação
+│   └── sketch_may26a.ino    # Código fonte do Arduino (Sketch)
+│
+├── .gitignore               # Arquivos e pastas ignorados pelo Git
+├── about.html               # Página "Sobre"
+├── index.html               # Página principal do projeto
+├── Arduino.c                # Código C para embarcados/Arduino
+├── requirements.txt         # Dependências do Python
+└── README.md                # Documentação do projeto
+```
