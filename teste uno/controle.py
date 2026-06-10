@@ -1,7 +1,7 @@
 import serial
 import pyautogui
 
-ser = serial.Serial('COM7', 115200, timeout=1)
+ser = serial.Serial('COM3', 115200, timeout=1)
 
 print("Rodando... pressione CTRL+C para parar")
 
