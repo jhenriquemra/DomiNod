@@ -65,14 +65,13 @@ DomiNod/
 ├── js/                      # Scripts do lado do cliente (Front-end)
 │   └── script.js
 │
-├── teste uno/               # Integração Arduino e scripts de controle
+├── setup               # Integração Arduino e scripts de controle
 │   ├── controle.py          # Script em Python para controle/comunicação
-│   └── sketch_may26a.ino    # Código fonte do Arduino (Sketch)
+│   └── arduino.c  # Código fonte do Arduino (Sketch)
 │
 ├── .gitignore               # Arquivos e pastas ignorados pelo Git
 ├── about.html               # Página "Sobre"
 ├── index.html               # Página principal do projeto
-├── Arduino.c                # Código C para embarcados/Arduino
 ├── requirements.txt         # Dependências do Python
 └── README.md                # Documentação do projeto
 ```
