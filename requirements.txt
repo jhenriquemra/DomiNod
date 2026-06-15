@@ -1,2 +1,4 @@
 pyautogui
 pyserial
+
+Alterar a porta "COM" no controle.py conforme a porta utilizada em sensor.ino

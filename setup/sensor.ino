@@ -23,15 +23,15 @@ void loop() {
   float ax = a.acceleration.x - OFFSET_AX;
   float ay = a.acceleration.y - OFFSET_AY;
 
-  if (ay < -3.0) {
+  if (ay < -4.0) {
     Serial.println("LEFT");
     delay(300);
-  } else if (ay > 3.0) {
+  } else if (ay > 4.0) {
     Serial.println("RIGHT");
     delay(300);
   }
 
-  if (ax < -3.0) {
+  if (ax < -4.0) {
     Serial.println("ENTER");
     delay(300);
   }
