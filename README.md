@@ -65,9 +65,9 @@ DomiNod/
 ├── js/                      # Scripts do lado do cliente (Front-end)
 │   └── script.js
 │
-├── setup               # Integração Arduino e scripts de controle
+├── setup                    # Integração Arduino e scripts de controle
 │   ├── controle.py          # Script em Python para controle/comunicação
-│   └── arduino.c  # Código fonte do Arduino (Sketch)
+│   └── sensor.ino           # Código fonte do Arduino (Sketch)
 │
 ├── .gitignore               # Arquivos e pastas ignorados pelo Git
 ├── about.html               # Página "Sobre"
